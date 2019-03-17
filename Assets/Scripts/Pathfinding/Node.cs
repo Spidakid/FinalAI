@@ -3,41 +3,59 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Node:IComparable
+public class Node : IComparable
 {
-    public float Gcost;//distance from start to current
-    public float Hcost;//distance from current to final
-    public float Fcost;//Fcost = Gcost + Hcost
-    public Node parent;
-    public bool isObstacle;
-    public Vector3 position;
-    public Node(Vector3 _pos,bool _isobstacle = false)
+
+    #region Fields
+    public float nodeTotalCost;         //Total cost so far for the node
+    public float estimatedCost;         //Estimated cost from this node to the goal node
+    public bool bObstacle;              //Does the node is an obstacle or not
+    public Node parent;                 //Parent of the node in the linked list
+    public Vector3 position;            //Position of the node
+    #endregion
+
+    /// <summary>
+    //Default Constructor
+    /// </summary>
+    public Node()
     {
-        Gcost = 1f;
-        Hcost = 0f;
-        parent = null;
-        isObstacle = _isobstacle;
-        position = _pos;
+        this.estimatedCost = 0.0f;
+        this.nodeTotalCost = 1.0f;
+        this.bObstacle = false;
+        this.parent = null;
     }
     /// <summary>
-    /// Sort an Array by Fcost
+    //Constructor with adding position to the node creation
     /// </summary>
-    /// <param name="obj">Node to compare to</param>
-    /// <returns>Placement of Current Node in an Array</returns>
+    public Node(Vector3 pos)
+    {
+        this.estimatedCost = 0.0f;
+        this.nodeTotalCost = 1.0f;
+        this.bObstacle = false;
+        this.parent = null;
+
+        this.position = pos;
+    }
+    /// <summary>
+    //Make the node to be noted as an obstacle
+    /// </summary>
+    public void MarkAsObstacle()
+    {
+        this.bObstacle = true;
+    }
+    /// <summary>
+    // This CompareTo methods affect on Sort method
+    // It applies when calling the Sort method from ArrayList
+    // Compare using the estimated total cost between two nodes
+    /// </summary>
     public int CompareTo(object obj)
     {
-        Node other = (Node)obj;
-        //place current instance before comparing instance
-        if (this.Fcost < other.Fcost)
-        {
+        Node node = (Node)obj;
+        if (this.estimatedCost < node.estimatedCost)
             return -1;
-        }
-        //place current instance after comparing instance
-        else if(this.Fcost > other.Fcost)
-        {
+        if (this.estimatedCost > node.estimatedCost)
             return 1;
-        }
-        //dont move current instance
+
         return 0;
     }
 }

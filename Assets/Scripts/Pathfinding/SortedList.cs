@@ -4,35 +4,52 @@ using UnityEngine;
 
 public class SortedList
 {
-    private ArrayList list = new ArrayList();
+    // node array to store the priority queue
+    private ArrayList nodes = new ArrayList();
+
+    /// <summary>
+    /// Number of nodes in the priority queue
+    /// </summary>
     public int Length
     {
-        get { return list.Count; }
+        get { return this.nodes.Count; }
     }
-    public void Add(Node _node)
+
+    /// <summary>
+    /// Check whether the node is already in the queue or not
+    /// </summary>
+    public bool Contains(object node)
     {
-        list.Add(_node);
-        list.Sort();
+        return this.nodes.Contains(node);
     }
-    public void Remove(Node _node)
-    {
-        list.Remove(_node);
-        list.Sort();
-    }
-    public bool Contains(Node _node)
-    {
-        return list.Contains(_node);
-    }
-    public Node GetNode(int index)
-    {
-        return (Node)list[index];
-    }
+
+    /// <summary>
+    /// Get the first node in the queue
+    /// </summary>
     public Node First()
     {
-        if (list.Count > 0)
+        if (this.nodes.Count > 0)
         {
-            return (Node)list[0];
+            return (Node)this.nodes[0];
         }
         return null;
+    }
+
+    /// <summary>
+    /// Add the node to the priority queue and sort with the estimated total cost
+    /// </summary>
+    public void Push(Node node)
+    {
+        this.nodes.Add(node);
+        this.nodes.Sort();
+    }
+
+    /// <summary>
+    /// Add the node from the priority queue and sort the remaining with the estimated total cost
+    /// </summary>
+    public void Remove(Node node)
+    {
+        this.nodes.Remove(node);
+        this.nodes.Sort();
     }
 }

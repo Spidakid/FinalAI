@@ -4,209 +4,275 @@ using UnityEngine;
 
 public class GridManager : MonoBehaviour
 {
-    public static GridManager Instance { get; private set; }
-    private Node[,] grid;
-    private Vector3 startOfGridPosition;
-    [SerializeField,Tooltip("Number of rows on the grid")]
-    private int maxRows = 10;
-    [SerializeField, Tooltip("Number of columns on the grid")]
-    private int maxColumns = 10;
-    [SerializeField,Tooltip("Size of each grid tile")]
-    private float gridTileSize;
-    [SerializeField,Tooltip("The group to identify as an obstacle")]
-    private string obstacleTag = "Obstacle";
-    private GameObject[] obstaclesArray;
-    [SerializeField]
-    private bool showGrid = true;
-    public Color gridColor = Color.blue;
-    
-    private void Awake()
+    // s_Instance is used to cache the instance found in the scene so we don't have to look it up every time.
+    private static GridManager s_Instance = null;
+
+    // This defines a static instance property that attempts to find the manager object in the scene and
+    // returns it to the caller.
+    public static GridManager instance
     {
-        //Get reference to a single GridManager script
-        Instance = (GridManager)FindObjectOfType(typeof(GridManager));
+        get
+        {
+            if (s_Instance == null)
+            {
+                // This is where the magic happens.
+                //  FindObjectOfType(...) returns the first GridManager object in the scene.
+                s_Instance = FindObjectOfType(typeof(GridManager)) as GridManager;
+                if (s_Instance == null)
+                    Debug.Log("Could not locate an GridManager object. \n You have to have exactly one GridManager in the scene.");
+            }
+            return s_Instance;
+        }
     }
-    private void Start()
+
+    // Ensure that the instance is destroyed when the game is stopped in the editor.
+    void OnApplicationQuit()
     {
-        grid = new Node[maxColumns, maxRows];
-        startOfGridPosition = new Vector3();//set to Vector3.zero
+        s_Instance = null;
+    }
+
+    #region Fields
+    public int numOfRows;
+    public int numOfColumns;
+    public float gridCellSize;
+    public bool showGrid = true;
+    public bool showObstacleBlocks = true;
+
+    private Vector3 origin = new Vector3();
+    private GameObject[] obstacleList;
+    public Node[,] nodes { get; set; }
+    #endregion
+
+    //Origin of the grid manager
+    public Vector3 Origin
+    {
+        get { return origin; }
+    }
+
+    //Initialise the grid manager
+    void Awake()
+    {
+        //Get the list of obstacles objects tagged as "Obstacle"
+        obstacleList = GameObject.FindGameObjectsWithTag("Obstacle");
         CalculateObstacles();
     }
-    private void CalculateObstacles()
+
+    /// <summary>
+    /// Calculate which cells in the grids are mark as obstacles
+    /// </summary>
+    void CalculateObstacles()
     {
-        obstaclesArray = GameObject.FindGameObjectsWithTag("Obstacle");
+        //Initialise the nodes
+        nodes = new Node[numOfColumns, numOfRows];
+
         int index = 0;
-        //Setup Grid 
-        for (int i = 0; i < maxColumns; i++)
+        for (int i = 0; i < numOfColumns; i++)
         {
-            for (int j = 0; j < maxRows; j++)
+            for (int j = 0; j < numOfRows; j++)
             {
-                Vector3 tilePos = GetGridTileCenter(index);
-                //set node position to the center of a grid tile
-                Node node = new Node(tilePos);
-                grid[i, j] = node;
+                Vector3 cellPos = GetGridCellCenter(index);
+                Node node = new Node(cellPos);
+                nodes[i, j] = node;
+
                 index++;
             }
         }
-        //For each obstacle found on the world, record it in our list
-        //Sets all obstacles to Grid
-        if (obstaclesArray.Length > 0 && obstaclesArray!= null)
+
+        //Run through the bObstacle list and set the bObstacle position
+        if (obstacleList != null && obstacleList.Length > 0)
         {
-            for (int i = 0; i < obstaclesArray.Length; i++)
+            foreach (GameObject data in obstacleList)
             {
-                int indexTile = GetGridTileIndex(obstaclesArray[i].transform.position);
-                int column = GetColumn(indexTile);
-                int row = GetRow(indexTile);
-                grid[row,column].isObstacle = true;
+                int indexCell = GetGridIndex(data.transform.position);
+                int col = GetColumn(indexCell);
+                int row = GetRow(indexCell);
+
+                //Also make the node as blocked status
+                nodes[row, col].MarkAsObstacle();
             }
         }
     }
-    public void GetNeighbors(Node _node, ArrayList _neighbors)
-    {
-        Vector3 curNodePos = _node.position;
-        int curNodeIndex = GetGridTileIndex(curNodePos);
 
-        int row = GetRow(curNodeIndex);
-        int column = GetColumn(curNodeIndex);
+    /// <summary>
+    /// Returns position of the grid cell in world coordinates
+    /// </summary>
+    public Vector3 GetGridCellCenter(int index)
+    {
+        Vector3 cellPosition = GetGridCellPosition(index);
+        cellPosition.x += (gridCellSize / 2.0f);
+        cellPosition.z += (gridCellSize / 2.0f);
 
-        //Top
-        int NodeRow = row - 1;
-        int NodeColumn = column;
-        AssignNeighbor(NodeRow,NodeColumn,_neighbors);
-        //Bottom
-        NodeRow = row + 1;
-        NodeColumn = column;
-        AssignNeighbor(NodeRow, NodeColumn, _neighbors);
-        //Left
-        NodeRow = row;
-        NodeColumn = column - 1;
-        AssignNeighbor(NodeRow, NodeColumn, _neighbors);
-        //Right
-        NodeRow = row;
-        NodeColumn = column + 1;
-        AssignNeighbor(NodeRow, NodeColumn, _neighbors);
+        return cellPosition;
     }
-    public void AssignNeighbor(int _row,int _column,ArrayList _neighbors)
-    {
-        //Check if neighbor is not out of bounds
-        if (_row != -1 && _column != -1 &&
-            _row < maxRows && _column < maxColumns)
-        {
-            Node neighborNode = grid[_row,_column];
-            //Check if node is a neighbor
-            if (!neighborNode.isObstacle)
-            {
-                //adds node to list of neighbors
-                _neighbors.Add(neighborNode);
-            }
-        }
-    }
-    #region Helper Functions
+
     /// <summary>
-    /// Gets the center position of a grid tile.
+    /// Returns position of the grid cell in a given index
     /// </summary>
-    /// <param name="_index">tile index</param>
-    /// <returns>returns the center position of the grid tile</returns>
-    private Vector3 GetGridTileCenter(int _index)
+    public Vector3 GetGridCellPosition(int index)
     {
-        //Start Position of tile
-        Vector3 tilePos = GetGridTilePosition(_index);
-        float halfOfTile = gridTileSize / 2.0f;
-        //Set position to the center of tile
-        tilePos += new Vector3(halfOfTile,0,halfOfTile);
-        return tilePos;
+        int row = GetRow(index);
+        int col = GetColumn(index);
+        float xPosInGrid = col * gridCellSize;
+        float zPosInGrid = row * gridCellSize;
+
+        return Origin + new Vector3(xPosInGrid, 0.0f, zPosInGrid);
     }
+
     /// <summary>
-    /// Gets the position of a grid tile
+    /// Get the grid cell index in the Astar grids with the position given
     /// </summary>
-    /// <param name="_index"></param>
-    /// <returns>returns the position of a grid tile</returns>
-    private Vector3 GetGridTilePosition(int _index)
+    public int GetGridIndex(Vector3 pos)
     {
-        //Retrieve Column and Row index position of Tile
-        int col = GetColumn(_index);
-        int row = GetRow(_index);
-        //Sets the position of the tile on the grid
-            //X and Z coordinates of the tile on the grid
-        float xPosInGrid = col * gridTileSize;
-        float zPosInGrid = row * gridTileSize;
-        
-        return new Vector3(xPosInGrid,0,zPosInGrid);
-    }
-    /// <summary>
-    /// Gets the index data of a grid tile(not real index. data based off grid not node)
-    /// </summary>
-    /// <param name="_pos"></param>
-    /// <returns>returns the index data of a grid tile</returns>
-    private int GetGridTileIndex(Vector3 _pos)
-    {
-        //Check if position is within grid boundaries
-        if (!IsInBounds(_pos))
+        if (!IsInBounds(pos))
         {
             return -1;
         }
-        int col = (int)(_pos.x / gridTileSize);
-        int row = (int)(_pos.x / gridTileSize);
-        //Get the index of tile on the grid(Ex: if [row = 1] and [col = 0] and [maxColumn = 4] then result will be 4)
-        //*In order to get real index put this data into the GetRow/GetColumn functions
-        return (row * maxColumns + col);
+
+        pos -= Origin;
+
+        int col = (int)(pos.x / gridCellSize);
+        int row = (int)(pos.z / gridCellSize);
+
+        return (row * numOfColumns + col);
     }
+
     /// <summary>
-    /// Gets the row of the grid tile
+    /// Get the row number of the grid cell in a given index
     /// </summary>
-    /// <param name="_index"></param>
-    /// <returns>returns the row of the grid tile</returns>
-    private int GetRow(int _index)
+    public int GetRow(int index)
     {
-        int row = _index / maxColumns;
+        int row = index / numOfColumns;
         return row;
     }
+
     /// <summary>
-    /// Gets the column of the grid tile
+    /// Get the column number of the grid cell in a given index
     /// </summary>
-    /// <param name="_index"></param>
-    /// <returns>returns the column of the grid tile</returns>
-    private int GetColumn(int _index)
+    public int GetColumn(int index)
     {
-        int column = _index % maxColumns;
-        return column;
+        int col = index % numOfColumns;
+        return col;
     }
-    private bool IsInBounds(Vector3 _pos)
+
+    /// <summary>
+    /// Check whether the current position is inside the grid or not
+    /// </summary>
+    public bool IsInBounds(Vector3 pos)
     {
-        //Get the max width and height of the grid
-        float maxGridWidth = maxColumns * gridTileSize;
-        float maxGridHeight = maxRows * gridTileSize;
-        //checks if out of bounds
-        return (_pos.x >= startOfGridPosition.x && _pos.x <= maxGridWidth &&
-            _pos.z >= startOfGridPosition.z && _pos.z <= maxGridHeight);
+        float width = numOfColumns * gridCellSize;
+        float height = numOfRows * gridCellSize;
+
+        return (pos.x >= Origin.x && pos.x <= Origin.x + width && pos.z <= Origin.z + height && pos.z >= Origin.z);
     }
-    #endregion
-    #region Debug
-    private void OnDrawGizmos()
+
+
+    /// <summary>
+    /// Get the neighour nodes in 4 different directions
+    /// </summary>
+    public void GetNeighbours(Node node, ArrayList neighbors)
     {
+        Vector3 neighborPos = node.position;
+        int neighborIndex = GetGridIndex(neighborPos);
+
+        int row = GetRow(neighborIndex);
+        int column = GetColumn(neighborIndex);
+
+        //Bottom
+        int leftNodeRow = row - 1;
+        int leftNodeColumn = column;
+        AssignNeighbour(leftNodeRow, leftNodeColumn, neighbors);
+
+        //Top
+        leftNodeRow = row + 1;
+        leftNodeColumn = column;
+        AssignNeighbour(leftNodeRow, leftNodeColumn, neighbors);
+
+        //Right
+        leftNodeRow = row;
+        leftNodeColumn = column + 1;
+        AssignNeighbour(leftNodeRow, leftNodeColumn, neighbors);
+
+        //Left
+        leftNodeRow = row;
+        leftNodeColumn = column - 1;
+        AssignNeighbour(leftNodeRow, leftNodeColumn, neighbors);
+    }
+
+    /// <summary>
+    /// Check the neighbour. If it's not obstacle, assigns the neighbour.
+    /// </summary>
+    /// <param name='row'>
+    /// Row.
+    /// </param>
+    /// <param name='column'>
+    /// Column.
+    /// </param>
+    /// <param name='neighbors'>
+    /// Neighbors.
+    /// </param>
+    void AssignNeighbour(int row, int column, ArrayList neighbors)
+    {
+        if (row != -1 && column != -1 && row < numOfRows && column < numOfColumns)
+        {
+            Node nodeToAdd = nodes[row, column];
+            if (!nodeToAdd.bObstacle)
+            {
+                neighbors.Add(nodeToAdd);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Show Debug Grids and obstacles inside the editor
+    /// </summary>
+    void OnDrawGizmos()
+    {
+        //Draw Grid
         if (showGrid)
         {
-            DebugDrawGrid(this.transform.position,maxRows,maxColumns,gridTileSize,gridColor);
+            DebugDrawGrid(Origin, numOfRows, numOfColumns, gridCellSize, Color.blue);
         }
-    }
-    private void DebugDrawGrid(Vector3 _origin,int _maxRows,int _maxColumns,float _cellSize, Color _color)
-    {
-        float width = _maxColumns * _cellSize;
-        float height = _maxRows * _cellSize;
 
-        //Draw horizontal grid lines
-        for (int i = 0; i < _maxRows + 1; i++)
+        //Grid Start Position
+        Gizmos.DrawSphere(transform.position, 0.5f);
+
+        //Draw Obstacle obstruction
+        if (showObstacleBlocks)
         {
-            Vector3 startPos = _origin + i * _cellSize * new Vector3(0f,0f,1f);
-            Vector3 endPos = startPos + width * new Vector3(1f, 0f, 0f);
-            Debug.DrawLine(startPos, endPos, _color);
-        }
-        //Draw vertical grid lines
-        for (int i = 0; i < _maxColumns + 1; i++)
-        {
-            Vector3 startPos = _origin + i * _cellSize * new Vector3(1f, 0f, 0f);
-            Vector3 endPos = startPos + height * new Vector3(0f, 0f, 1f);
-            Debug.DrawLine(startPos, endPos, _color);
+            Vector3 cellSize = new Vector3(gridCellSize, 1.0f, gridCellSize);
+
+            if (obstacleList != null && obstacleList.Length > 0)
+            {
+                foreach (GameObject data in obstacleList)
+                {
+                    Gizmos.DrawCube(GetGridCellCenter(GetGridIndex(data.transform.position)), cellSize);
+                }
+            }
         }
     }
-    #endregion
+
+    /// <summary>
+    /// Draw the debug grid lines in the rows and columns order
+    /// </summary>
+    public void DebugDrawGrid(Vector3 origin, int numRows, int numCols, float cellSize, Color color)
+    {
+        float width = (numCols * cellSize);
+        float height = (numRows * cellSize);
+
+        // Draw the horizontal grid lines
+        for (int i = 0; i < numRows + 1; i++)
+        {
+            Vector3 startPos = origin + i * cellSize * new Vector3(0.0f, 0.0f, 1.0f);
+            Vector3 endPos = startPos + width * new Vector3(1.0f, 0.0f, 0.0f);
+            Debug.DrawLine(startPos, endPos, color);
+        }
+
+        // Draw the vertial grid lines
+        for (int i = 0; i < numCols + 1; i++)
+        {
+            Vector3 startPos = origin + i * cellSize * new Vector3(1.0f, 0.0f, 0.0f);
+            Vector3 endPos = startPos + height * new Vector3(0.0f, 0.0f, 1.0f);
+            Debug.DrawLine(startPos, endPos, color);
+        }
+    }
 }

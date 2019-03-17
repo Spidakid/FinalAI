@@ -4,92 +4,109 @@ using UnityEngine;
 
 public class AStar
 {
+    #region List fields
+
     public static SortedList openList;
     public static HashSet<Node> closedList;
+
+    #endregion
+
     /// <summary>
-    /// Cost Calculation
+    /// Calculate the final path in the path finding
     /// </summary>
-    /// <param name="curNode"></param>
-    /// <param name="goalNode"></param>
-    /// <returns></returns>
-    private static float CostCalculation(Node curNode,Node goalNode)
+    private static ArrayList CalculatePath(Node node)
+    {
+        ArrayList list = new ArrayList();
+        while (node != null)
+        {
+            list.Add(node);
+            node = node.parent;
+        }
+        list.Reverse();
+        return list;
+    }
+
+    /// <summary>
+    /// Calculate the estimated Heuristic cost to the goal
+    /// </summary>
+    private static float HeuristicEstimateCost(Node curNode, Node goalNode)
     {
         Vector3 vecCost = curNode.position - goalNode.position;
         return vecCost.magnitude;
     }
-    private static ArrayList FindPath(Node _start,Node _goal)
+
+    /// <summary>
+    /// Find the path between start node and goal node using AStar Algorithm
+    /// </summary>
+    public static ArrayList FindPath(Node start, Node goal)
     {
+        //Start Finding the path
         openList = new SortedList();
-        openList.Add(_start);
-        _start.Gcost = 0.0f;//set start node gcost
-        _start.Hcost = CostCalculation(_start,_goal);//set start node hcost
-        _start.Fcost = _start.Gcost + _start.Hcost;
+        openList.Push(start);
+        start.nodeTotalCost = 0.0f;
+        start.estimatedCost = HeuristicEstimateCost(start, goal);
 
         closedList = new HashSet<Node>();
-        //initialize current node
         Node node = null;
-        //Finding a path loop
+
         while (openList.Length != 0)
         {
-            //set current node to first in list
             node = openList.First();
-            //check if current node is the target node
-            if (node.position == _goal.position)
+
+            if (node.position == goal.position)
             {
                 return CalculatePath(node);
             }
-            //Arraylist to store neighbor nodes
-            ArrayList neighbors = new ArrayList();
-            //Retrieve neighbors and store them in arraylist
-            GridManager.Instance.GetNeighbors(node, neighbors);
-            //Find a neighbor with the least Fcost
-            for (int i = 0; i < neighbors.Count; i++)
-            {
-                Node neighborNode = (Node)neighbors[i];
-                //Checks if node is already in closedList
-                if (!closedList.Contains(neighborNode))
-                {
-                    //Cost from current to neighbor node
-                    float cost = CostCalculation(node,neighborNode);
-                    float totalCost = node.Gcost + cost;//Gcost of currentnode + Gcost
-                    float neighborNodeHCost = CostCalculation(neighborNode,_goal);//neighbor Hcost
 
-                    neighborNode.Gcost = totalCost;//neighbor Gcost
-                    neighborNode.Hcost = neighborNodeHCost;//neighbor Hcost
-                    //*Set current node as the parent
-                    neighborNode.parent = node;
-                    neighborNode.Fcost = totalCost + neighborNodeHCost; //neighbor Fcost
-                    //Check if current neighbor is in the open list
-                    if (!openList.Contains(neighborNode))
+            ArrayList neighbours = new ArrayList();
+            GridManager.instance.GetNeighbours(node, neighbours);
+
+            #region CheckNeighbours
+
+            //Get the Neighbours
+            for (int i = 0; i < neighbours.Count; i++)
+            {
+                //Cost between neighbour nodes
+                Node neighbourNode = (Node)neighbours[i];
+
+                if (!closedList.Contains(neighbourNode))
+                {
+                    //Cost from current node to this neighbour node
+                    float cost = HeuristicEstimateCost(node, neighbourNode);
+
+                    //Total Cost So Far from start to this neighbour node
+                    float totalCost = node.nodeTotalCost + cost;
+
+                    //Estimated cost for neighbour node to the goal
+                    float neighbourNodeEstCost = HeuristicEstimateCost(neighbourNode, goal);
+
+                    //Assign neighbour node properties
+                    neighbourNode.nodeTotalCost = totalCost;
+                    neighbourNode.parent = node;
+                    neighbourNode.estimatedCost = totalCost + neighbourNodeEstCost;
+
+                    //Add the neighbour node to the list if not already existed in the list
+                    if (!openList.Contains(neighbourNode))
                     {
-                        openList.Add(neighborNode);
+                        openList.Push(neighbourNode);
                     }
                 }
             }
-            //Add current node to closedList
+
+            #endregion
+
             closedList.Add(node);
-            //and remove it from openList
             openList.Remove(node);
         }
-        if (node.position !=_goal.position)
+
+        //If finished looping and cannot find the goal then return null
+        if (node.position != goal.position)
         {
-            Debug.LogError("Goal Not Found!");
+            Debug.LogError("Goal Not Found");
             return null;
         }
+
+        //Calculate the path based on the final node
         return CalculatePath(node);
-    }
-    private static ArrayList CalculatePath(Node _node)
-    {
-        ArrayList list = new ArrayList();
-        //Checks the parents of all nodes until it reaches a node without a parent(the start node)
-        while (_node != null)
-        {
-            //add node to the list
-            list.Add(_node);
-            //sets the current node's parent as the current node
-            _node = _node.parent;
-        }
-        list.Reverse();//Since we want a path array from the start node to the target node, we call this method;
-        return list;
     }
 }
