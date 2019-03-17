@@ -18,9 +18,9 @@ public class SortedList
     /// <summary>
     /// Check whether the node is already in the queue or not
     /// </summary>
-    public bool Contains(object node)
+    public bool Contains(Node _node)
     {
-        return this.nodes.Contains(node);
+        return this.nodes.Contains(_node);
     }
 
     /// <summary>
@@ -38,18 +38,18 @@ public class SortedList
     /// <summary>
     /// Add the node to the priority queue and sort with the estimated total cost
     /// </summary>
-    public void Push(Node node)
+    public void Add(Node _node)
     {
-        this.nodes.Add(node);
+        this.nodes.Add(_node);
         this.nodes.Sort();
     }
 
     /// <summary>
     /// Add the node from the priority queue and sort the remaining with the estimated total cost
     /// </summary>
-    public void Remove(Node node)
+    public void Remove(Node _node)
     {
-        this.nodes.Remove(node);
+        this.nodes.Remove(_node);
         this.nodes.Sort();
     }
 }

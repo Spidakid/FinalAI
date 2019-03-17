@@ -4,22 +4,21 @@ using UnityEngine;
 
 public class AStarNavigation : MonoBehaviour
 {
-    private Transform startPos, endPos;
-    public Node startNode { get; set; }
-    public Node goalNode { get; set; }
+    public  Transform startPos, goalPos;
+    private Node startNode, goalNode;
 
     public ArrayList pathArray;
 
-    GameObject objStartCube, objEndCube;
+    //GameObject objStartCube, objEndCube;
 
-    private float elapsedTime = 0.0f;
+    private float currentTime = 0.0f;
     public float intervalTime = 1.0f; //Interval time between path finding
-
+    public Color pathColor = Color.yellow;
     // Use this for initialization
     void Start()
     {
-        objStartCube = GameObject.FindGameObjectWithTag("Start");
-        objEndCube = GameObject.FindGameObjectWithTag("End");
+        //objStartCube = GameObject.FindGameObjectWithTag("Start");
+        //objEndCube = GameObject.FindGameObjectWithTag("End");
 
         //AStar Calculated Path
         pathArray = new ArrayList();
@@ -29,27 +28,33 @@ public class AStarNavigation : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        elapsedTime += Time.deltaTime;
-
-        if (elapsedTime >= intervalTime)
+        //Timer
+        currentTime += Time.deltaTime;
+        //Finds a path every interval
+        if (currentTime >= intervalTime)
         {
-            elapsedTime = 0.0f;
+            currentTime = 0.0f;
             FindPath();
         }
     }
 
     void FindPath()
     {
-        startPos = objStartCube.transform;
-        endPos = objEndCube.transform;
+        //startPos = objStartCube.transform;
+        //goalPos = objEndCube.transform;
 
         //Assign StartNode and Goal Node
-        startNode = new Node(GridManager.instance.GetGridCellCenter(GridManager.instance.GetGridIndex(startPos.position)));
-        goalNode = new Node(GridManager.instance.GetGridCellCenter(GridManager.instance.GetGridIndex(endPos.position)));
+        //startNode = new Node(GridManager.Instance.GetGridTileCenter(GridManager.Instance.GetGridIndex(startPos.position)));
+        //goalNode = new Node(GridManager.Instance.GetGridTileCenter(GridManager.Instance.GetGridIndex(goalPos.position)));
+        startNode = GetNodeForGrid(startPos.position);
+        goalNode = GetNodeForGrid(goalPos.position);
 
         pathArray = AStar.FindPath(startNode, goalNode);
     }
-
+    private Node GetNodeForGrid(Vector3 _pos)
+    {
+        return new Node(GridManager.Instance.GetGridTileCenter(GridManager.Instance.GetGridIndex(_pos))); ;
+    }
     void OnDrawGizmos()
     {
         if (pathArray == null)
@@ -63,7 +68,7 @@ public class AStarNavigation : MonoBehaviour
                 if (index < pathArray.Count)
                 {
                     Node nextNode = (Node)pathArray[index];
-                    Debug.DrawLine(node.position, nextNode.position, Color.green);
+                    Debug.DrawLine(node.position, nextNode.position, pathColor);
                     index++;
                 }
             };
