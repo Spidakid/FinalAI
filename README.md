@@ -1,2 +1,2 @@
 # FinalAI
-Game AI Programming in Unity
+Game AI Programming Tests in Unity
