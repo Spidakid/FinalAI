@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class AStarNavigation : MonoBehaviour
 {
-    public  Transform startPos, goalPos;
+    private Transform startPos;
+    public Transform goalPos;
     private Node startNode, goalNode;
 
     public ArrayList pathArray;
@@ -21,6 +22,7 @@ public class AStarNavigation : MonoBehaviour
     {
         //AStar Calculated Path
         pathArray = new ArrayList();
+        startPos = this.transform;
         FindPath();
         curPathindex = 0;//init
     }
@@ -52,6 +54,11 @@ public class AStarNavigation : MonoBehaviour
 
         pathArray = AStar.FindPath(startNode, goalNode);
     }
+    /// <summary>
+    /// Generate a new Node to be placed on the grid
+    /// </summary>
+    /// <param name="_pos"></param>
+    /// <returns></returns>
     private Node GetNodeForGrid(Vector3 _pos)
     {
         return new Node(GridManager.Instance.GetGridTileCenter(GridManager.Instance.GetGridIndex(_pos)));
@@ -59,7 +66,7 @@ public class AStarNavigation : MonoBehaviour
     /// <summary>
     /// Follow and Steer towards the current generated path
     /// </summary>
-    void FollowPath()
+    private void FollowPath()
     {
         //ternary operator assignment
         //  if curPathIndex < pathArray.Count then curNode = (Node)pathArray[curPathindex];
@@ -79,16 +86,26 @@ public class AStarNavigation : MonoBehaviour
                 curPathindex = 0;
             }
         }
+        //Path Follow and Steering algorithm
         Vector3 objToCurNode = curNode.position - this.transform.position;
         this.transform.rotation = Quaternion.LookRotation(objToCurNode);//Rotate Agent to face node
         this.transform.Translate(Vector3.forward * Speed * Time.deltaTime);//Move Agent
-        
-
+       
+    }
+    /// <summary>
+    /// Set a new destination to travel
+    /// </summary>
+    /// <param name="_pos"></param>
+    public void ChangeGoalPosition(Vector3 _pos)
+    {
+        goalPos.position = _pos;
+        curPathindex = 0;
+        ResetPathfinding();
     }
     /// <summary>
     /// Restart the Pathfinding process
     /// </summary>
-    void ResetPathfinding()
+    private void ResetPathfinding()
     {
         //reset refresh timer
         currentTime = 0.0f;
