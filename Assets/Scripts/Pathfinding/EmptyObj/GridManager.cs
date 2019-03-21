@@ -84,16 +84,100 @@ public class GridManager : MonoBehaviour
         {
             foreach (GameObject data in obstacleArray)
             {
-                int indexCell = GetGridIndex(data.transform.position);
-                int col = GetColumn(indexCell);
-                int row = GetRow(indexCell);
+                
+                int obstSizeZ = (int)(Mathf.Ceil(data.transform.lossyScale.x)/gridTileSize);//X Axis on grid from origin
+                int obstSizeX = (int)(Mathf.Ceil(data.transform.lossyScale.z)/gridTileSize);//Y Axis on grid from origin
+                //Amount of tiles in front of the center of the obstacle
+                int forwardXLength = 0;
+                int forwardZLength = 0;
+                //Amount of tiles in the back of the center of the obstacle
+                int backwardXLength = 0;
+                int backwardZLength = 0;
+                if (obstSizeX % 2 != 0)
+                {
+                    //Odd
+                    //if the obstacle occupy an odd # of tiles along X-Axis
+                    forwardXLength += (obstSizeX - 1) / 2;
+                    backwardXLength += (obstSizeX - 1) / 2;
+                }
+                else
+                {
+                    //Even
+                    //if the obstacle occupy an even # of tiles along X-Axis
+                    forwardXLength += (obstSizeX / 2);
+                    backwardXLength += obstSizeX - forwardXLength;
+                }
+                if (obstSizeZ % 2 != 0)
+                {
+                    //Odd
+                    //if the obstacle occupy an odd # of tiles along Z-Axis
+                    forwardZLength += (obstSizeZ - 1) / 2;
+                    backwardZLength += (obstSizeZ - 1) / 2;
+                }
+                else
+                {
+                    //Even
+                    //if the obstacle occupy an even # of tiles along Z-Axis
+                    forwardZLength += (obstSizeZ / 2);
+                    backwardZLength += obstSizeZ - forwardZLength;
+                }
+                AssignObstaclesToGrid(data,forwardXLength,backwardXLength,forwardZLength,backwardZLength);
 
-                //Also make the node a blocked status
-                grid[row, col].isObstacle = true;
             }
         }
     }
+    #region Helper Functions
+    /// <summary>
+    /// Assign Obstacles to the grid based on the amount of tiles current obstacle occupies
+    /// </summary>
+    /// <param name="_curobstacle">current obstacle in question</param>
+    /// <param name="_xforlength">amount of tiles in front of current position X</param>
+    /// <param name="_xbacklength">amount of tiles behind current position X</param>
+    /// <param name="_zforlength">amount of tiles in front of current position Z</param>
+    /// <param name="_zbacklength">amount of tiles behind current position Z</param>
+    private void AssignObstaclesToGrid(GameObject _curobstacle,int _xforlength,int _xbacklength, int _zforlength, int _zbacklength)
+    {
+        //ForwardX
+        for (int i = 0; i < _xforlength + 1; i++)
+        {
+            int indexCell = GetGridIndex(_curobstacle.transform.position);
+            int row = GetColumn(indexCell);//row
+            int col = GetRow(indexCell);//column
 
+            //Also make the node a blocked status
+            grid[col + i, row].isObstacle = true;
+        }
+        //BackwardX
+        for (int i = 0; i < _xbacklength + 1; i++)
+        {
+            int indexCell = GetGridIndex(_curobstacle.transform.position);
+            int row = GetColumn(indexCell);//row
+            int col = GetRow(indexCell);//column
+
+            //Also make the node a blocked status
+            grid[col - i, row].isObstacle = true;
+        }
+        //ForwardZ
+        for (int i = 0; i < _zforlength + 1; i++)
+        {
+            int indexCell = GetGridIndex(_curobstacle.transform.position);
+            int row = GetColumn(indexCell);//row
+            int col = GetRow(indexCell);//column
+
+            //Also make the node a blocked status
+            grid[col, row + i].isObstacle = true;
+        }
+        //BackwardZ
+        for (int i = 0; i < _zbacklength + 1; i++)
+        {
+            int indexCell = GetGridIndex(_curobstacle.transform.position);
+            int row = GetColumn(indexCell);//row
+            int col = GetRow(indexCell);//column
+
+            //Also make the node a blocked status
+            grid[col, row - i].isObstacle = true;
+        }
+    }
     /// <summary>
     /// Returns position of the grid tile in world coordinates
     /// </summary>
@@ -235,6 +319,7 @@ public class GridManager : MonoBehaviour
             }
         }
     }
+#endregion
     #region Debug
     /// <summary>
     /// Show Debug Grids and obstacles inside the editor
@@ -253,13 +338,17 @@ public class GridManager : MonoBehaviour
         //Draw Obstacle obstruction
         if (showObstacleBlocks)
         {
-            Vector3 cellSize = new Vector3(gridTileSize, 1.0f, gridTileSize);
+           
 
             if (obstacleArray != null && obstacleArray.Length > 0)
             {
                 foreach (GameObject data in obstacleArray)
                 {
-                    Gizmos.DrawCube(GetGridTileCenter(GetGridIndex(data.transform.position)), cellSize);
+
+                    int obstSizeX = Mathf.CeilToInt(data.transform.lossyScale.x);
+                    int obstSizeZ = Mathf.CeilToInt(data.transform.lossyScale.z);
+                    Vector3 obstacleTileSize = new Vector3(obstSizeX, 1.0f, obstSizeZ);
+                    Gizmos.DrawCube(GetGridTileCenter(GetGridIndex(data.transform.position)), obstacleTileSize);
                 }
             }
         }
