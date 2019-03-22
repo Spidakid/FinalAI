@@ -21,7 +21,6 @@ public class AStar
             //sets the current node's parent as the current node
             _node = _node.parent;
         }
-        list.Reverse();//Since we want a path array from the start node to the target node, we call this method;
         return list;
     }
 
@@ -45,7 +44,6 @@ public class AStar
         _start.Gcost = 0.0f;//set start gcost
         _start.Hcost = CostCalculation(_start, _goal);//set start node hcost
         _start.Fcost = _start.Gcost+ _start.Hcost;
-
         closedList = new HashSet<Node>();
         Node node = null;//init current node
 

@@ -5,20 +5,29 @@ using UnityEngine;
 public class AStarNavigation : MonoBehaviour
 {
     private Transform startPos;
+    [Tooltip("The object to reach")]
     public Transform goalPos;
     private Node startNode, goalNode;
+    [Tooltip("How fast to move object")]
+    public float Speed = 1.0f;
 
     public ArrayList pathArray;
-
+    //Time
     private float currentTime = 0.0f;
+    [Tooltip("Interval time between path finding")]
     public float intervalTime = 1.0f; //Interval time between path finding
-    public float Speed = 1.0f;
+
     public Color lineColor = Color.yellow;
-    public float stopRadius = 0.5f;
-    public Color sphereColor = Color.magenta;
+    public float nodeRadius = 0.5f;
+    public Color nodeColor = Color.magenta;
+    [Tooltip("The stopping radius before reaching the final destination")]
+    public float stopRadius = 1f;
+    public Color stopColor = Color.green;
+
     private int curPathindex;
+    private int prevPathCount = 0;
     [HideInInspector]
-    public bool isStopped = false;
+    public bool isStopped = false;//stops the path finding process completely
     // Use this for initialization
     void Start()
     {
@@ -26,22 +35,18 @@ public class AStarNavigation : MonoBehaviour
         pathArray = new ArrayList();
         startPos = this.transform;
         FindPath();
+        //Set previous path count
+        prevPathCount = pathArray.Count;
         curPathindex = 0;//init
     }
 
     // Update is called once per frame
     void Update()
     {
-        //Timer
-        currentTime += Time.deltaTime;
-        //Finds a path every interval
-        if (currentTime >= intervalTime)
-        {
-            Debug.Log("RESET!");
-            ResetPathfinding();
-        }
         if (!isStopped)
         {
+            ////Timer
+            RefreshPathTimer();
             //Check if current index is within the bounds of the pathArray
             if (curPathindex < pathArray.Count)
             {
@@ -51,6 +56,19 @@ public class AStarNavigation : MonoBehaviour
         
     }
     /// <summary>
+    /// Finds a path every interval
+    /// </summary>
+    private void RefreshPathTimer()
+    {
+        currentTime += Time.deltaTime;
+        ////Finds a path every interval
+        if (currentTime >= intervalTime)
+        {
+            Debug.Log("RESET!");
+            ResetPathfinding();
+        }
+    }
+    /// <summary>
     /// Finds a new path
     /// </summary>
     void FindPath()
@@ -58,7 +76,29 @@ public class AStarNavigation : MonoBehaviour
         startNode = GetNodeForGrid(startPos.position);
         goalNode = GetNodeForGrid(goalPos.position);
 
-        pathArray = AStar.FindPath(startNode, goalNode);
+        
+        if (pathArray.Count > 0)
+        {
+            pathArray.Clear();
+        }
+        //Convert PathArray list to hold only type Vector3 rather than Node
+        ArrayList nodeArray = AStar.FindPath(startNode, goalNode);//holds nodes
+        Vector3[] posArray = new Vector3[nodeArray.Count+1];//holds vector3s
+        for (int i = 0; i < posArray.Length; i++)
+        {
+            if (i == 0)
+            {
+                posArray[i] = goalPos.position;
+            }
+            else
+            {
+                Node curnode = (Node)nodeArray[i-1];
+                posArray[i] = curnode.position;
+            }
+        }
+        pathArray.AddRange(posArray);//add contents of array into Arraylist
+        pathArray.Reverse();//***Since we want a path array from the start node to the target node, we call this method;
+
     }
     /// <summary>
     /// Generate a new Node to be placed on the grid
@@ -75,25 +115,42 @@ public class AStarNavigation : MonoBehaviour
     private void FollowPath()
     {
         //ternary operator assignment
-        //  if curPathIndex < pathArray.Count then curNode = (Node)pathArray[curPathindex];
-        //  else curNode = null;
-        Node curNode = (curPathindex < pathArray.Count) ? (Node)pathArray[curPathindex] : null;
+        //  if curPathIndex < pathArray.Count then curNode = (Vector3)pathArray[curPathindex];
+        //  else curNode = Vector3.zero;
+        Vector3 curNodeVector = (curPathindex < pathArray.Count) ? (Vector3)pathArray[curPathindex] : Vector3.zero;
+        if (prevPathCount != pathArray.Count)
+        {
+            prevPathCount = pathArray.Count;
+            curPathindex--;
+        }
         //Check if array or current node is null
-        if (pathArray == null ||curNode == null)
+        if (pathArray == null ||curNodeVector == Vector3.zero)
         {
             return;
         }
-        else if (Vector3.Distance(this.transform.position, curNode.position) < this.stopRadius)
+        else if (curNodeVector == goalPos.position && Vector3.Distance(this.transform.position, goalPos.position) < this.stopRadius || Vector3.Distance(this.transform.position, goalPos.position) < this.stopRadius)
         {
+            Debug.Log("Goal Reached!");
+            return;
+        }
+        else if (Vector3.Distance(this.transform.position, curNodeVector) < this.nodeRadius)
+        {
+            //Check if current node reached the goal
+            if (curNodeVector == goalPos.position)
+            {
+                Debug.Log("Goal Reached!");
+                return;
+            }
             curPathindex++;
-            //Reset index to 0 if out of bounds
+            ResetPathfinding();
+            //Check if current path index is out of bounds
             if (curPathindex >= pathArray.Count)
             {
                 curPathindex = 0;
             }
         }
         //Path Follow and Steering algorithm
-        Vector3 objToCurNode = curNode.position - this.transform.position;
+        Vector3 objToCurNode = curNodeVector - this.transform.position;
         this.transform.rotation = Quaternion.LookRotation(objToCurNode);//Rotate Agent to face node
         this.transform.Translate(Vector3.forward * Speed * Time.deltaTime);//Move Agent
        
@@ -104,7 +161,9 @@ public class AStarNavigation : MonoBehaviour
     /// <param name="_pos"></param>
     public void ChangeGoalPosition(Vector3 _pos)
     {
+        //set new goal position
         goalPos.position = _pos;
+        //reset current path index
         curPathindex = 0;
         ResetPathfinding();
     }
@@ -115,7 +174,7 @@ public class AStarNavigation : MonoBehaviour
     {
         //reset refresh timer
         currentTime = 0.0f;
-        
+        prevPathCount = pathArray.Count;
         //Generate new A* path
         FindPath();
     }
@@ -129,18 +188,20 @@ public class AStarNavigation : MonoBehaviour
         if (pathArray.Count > 0)
         {
             int index = 1;
-            foreach (Node node in pathArray)
+            foreach (Vector3 position in pathArray)
             {
                 if (index < pathArray.Count)
                 {
-                    Node nextNode = (Node)pathArray[index];
-                    Debug.DrawLine(node.position, nextNode.position, lineColor);
+                    Vector3 nextPosition = (Vector3)pathArray[index];
+                    Debug.DrawLine(position, nextPosition, lineColor);
                     //Sphere Debug Drawing
-                    Gizmos.color = sphereColor;
-                    Gizmos.DrawSphere(node.position,stopRadius);
+                    Gizmos.color = nodeColor;
+                    Gizmos.DrawSphere(position,nodeRadius);
                     index++;
                 }
             };
+            Gizmos.color = stopColor;
+            Gizmos.DrawSphere(goalPos.position, stopRadius);
         }
     }
     #endregion
