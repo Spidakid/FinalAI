@@ -17,6 +17,8 @@ public class AStarNavigation : MonoBehaviour
     public float stopRadius = 0.5f;
     public Color sphereColor = Color.magenta;
     private int curPathindex;
+    [HideInInspector]
+    public bool isStopped = false;
     // Use this for initialization
     void Start()
     {
@@ -30,19 +32,23 @@ public class AStarNavigation : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //Check if current index is within the bounds of the pathArray
-        if (curPathindex < pathArray.Count)
+        //Timer
+        currentTime += Time.deltaTime;
+        //Finds a path every interval
+        if (currentTime >= intervalTime)
         {
-            //Timer
-            currentTime += Time.deltaTime;
-            //Finds a path every interval
-            if (currentTime >= intervalTime)
-            {
-                Debug.Log("RESET!");
-                ResetPathfinding();
-            }
-            FollowPath();
+            Debug.Log("RESET!");
+            ResetPathfinding();
         }
+        if (!isStopped)
+        {
+            //Check if current index is within the bounds of the pathArray
+            if (curPathindex < pathArray.Count)
+            {
+                FollowPath();
+            }
+        }
+        
     }
     /// <summary>
     /// Finds a new path

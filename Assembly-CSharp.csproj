@@ -61,7 +61,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\Flocking\Boid.cs" />
-    <Compile Include="Assets\Scripts\Flocking\BoidLeader.cs" />
     <Compile Include="Assets\Scripts\Pathfinding\EmptyObj\AStarNavigation.cs" />
     <Compile Include="Assets\Scripts\Pathfinding\EmptyObj\GridManager.cs" />
     <Compile Include="Assets\Scripts\Pathfinding\Programming\AStar.cs" />
