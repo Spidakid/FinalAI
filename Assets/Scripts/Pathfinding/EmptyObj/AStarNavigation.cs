@@ -27,7 +27,7 @@ public class AStarNavigation : MonoBehaviour
     private int curPathindex;
     private int prevPathCount = 0;
     [HideInInspector]
-    public bool isStopped = false;//stops the path finding process completely
+    public bool isStopped = false;//stops the path follow, but keeps pathfinding
     // Use this for initialization
     void Start()
     {
@@ -43,10 +43,10 @@ public class AStarNavigation : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!isStopped)
-        {
             ////Timer
             RefreshPathTimer();
+        if (!isStopped)
+        {
             //Check if current index is within the bounds of the pathArray
             if (curPathindex < pathArray.Count)
             {

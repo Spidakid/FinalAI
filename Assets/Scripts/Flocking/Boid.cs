@@ -5,37 +5,54 @@ using UnityEngine;
 public class Boid : MonoBehaviour
 {
     public GameObject Leader;
-    public float boidRadius = 1f;
-    public float maxDistanceFromLeader;
+    [Tooltip("sphere radius to avoid other boids")]
+    public float boidRadius = 5f;
+    public Color boidRadiusColor = Color.green;
+    public float separationSpeed = 0.25f;
     private GameObject waypoint;
-    GameObject[] otherBoids;
-    private Vector3 DirFromBoid;
-    private float distanceFromLeader;
+    private List<GameObject> otherBoids;
+    private AStarNavigation astar;
     
     // Start is called before the first frame update
     void Start()
     {
+        otherBoids = new List<GameObject>();
+        //astar = this.GetComponent<AStarNavigation>();
+        //Sets object tag as Boid
         if (this.tag.ToLower() == "untagged")
         {
             this.tag = "Boid";
-
+        }
+        if (Leader.tag.ToLower() == "untagged")
+        {
+            Leader.tag = "Boid";
         }
         //create a waypoint
         waypoint = new GameObject(this.name +"'s waypoint");
-        otherBoids = GameObject.FindGameObjectsWithTag(this.tag);
+        //Retrieve all other boid gameobjects
+        otherBoids.AddRange(GameObject.FindGameObjectsWithTag(this.tag));
+        otherBoids.Remove(this.gameObject);
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        SeparationRule();
     }
     private void SeparationRule()
     {
-        for (int i = 0; i < otherBoids.Length; i++)
+        Vector3 DirFromBoid = Vector3.zero; 
+        for (int i = 0; i < otherBoids.Count; i++)
         {
-
+            
+            if (Vector3.Distance(this.transform.position, otherBoids[i].transform.position) < boidRadius)
+            {
+                Debug.Log(otherBoids[i].name);
+                DirFromBoid += this.transform.position-otherBoids[i].transform.position;
+            }
         }
+        DirFromBoid.Normalize();
+        this.transform.Translate(DirFromBoid * separationSpeed * Time.deltaTime);
     }
     private void CohesionRule()
     {
@@ -45,4 +62,11 @@ public class Boid : MonoBehaviour
     {
 
     }
+    #region Debug
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = boidRadiusColor;
+        Gizmos.DrawWireSphere(this.transform.position, boidRadius);
+    }
+    #endregion
 }
