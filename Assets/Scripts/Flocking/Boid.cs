@@ -6,17 +6,16 @@ public class Boid : MonoBehaviour
 {
     public GameObject Leader;
     public GameObject flockOrigin;
+    //current boid Speed
+    private float boidSpeed = 0.4f;
 
     [Header("Separation Parameters")]
-    public float separationSpeed = 0.15f;
     [Tooltip("sphere radius to avoid other boids")]
-    public float avoidanceRadius = 5f;
+    public float avoidanceRadius = 2.77f;
     private Color avoidanceColor = Color.green;
 
-    //Avoid Origin Parameters
+    //Cohesion 
     [Header("Cohesion Parameters")]
-    [Tooltip("How fast to place boid back within the radius of the flock's origin")]
-    public float avoidOriginSpeed = 0.2f;
     [Tooltip("Maximum distance to be away origin")]
     public float outerOriginRadius = 5f;
     [Tooltip("Minimum from the center of the origin")]
@@ -24,9 +23,22 @@ public class Boid : MonoBehaviour
     public Color originOuterColor = Color.black;
     private static Color originInnerColor = Color.black;
 
+    //Alignment
+    [Header("Alignment Parameters")]
+    [Tooltip("time it takes to update the random speed and random direction")]
+    public float maxAlignTime = 2f;
+    private float curAlignTime = 0;//timer
+    private float adjustSpeed;//How much faster to adjust to the flocking rules. Zero is same speed as flock Origin
+    [Tooltip("Random speed within the range of the flocking origin")]
+    public bool randomSpeed = false;
+
     private GameObject waypoint;
     private List<GameObject> otherBoids;
-
+    private Vector3 movementDir = Vector3.zero;//Direction boid will move depending on boid rules
+    private bool passBoidRules = true;//pass all flocking rules
+    private float flockSpeed;
+    [Space(10)]
+    public bool showDebug = false;
     // Start is called before the first frame update
     void Start()
     {
@@ -45,63 +57,120 @@ public class Boid : MonoBehaviour
         //Retrieve all other boid gameobjects
         otherBoids.AddRange(GameObject.FindGameObjectsWithTag(this.tag));
         otherBoids.Remove(this.gameObject);
+
+        flockSpeed = flockOrigin.GetComponent<AStarOrigin>().Speed;
+        adjustSpeed = flockSpeed + boidSpeed;
+        SetBoidSpeed();
+        movementDir = Leader.transform.position - flockOrigin.transform.position;
     }
 
     // Update is called once per frame
     void Update()
     {
+        //Reset flocking checks
+        passBoidRules = true;
         SeparationRule();
         CohesionRule();
+        //Check if goal is reached and if flocking checks have been passed
+        if (!flockOrigin.GetComponent<AStarOrigin>().reachGoal && passBoidRules)
+        {
+            AlignmentRule();
+        }
+        else if (!passBoidRules)
+        {
+            boidSpeed = adjustSpeed;
+        }
+        if (!flockOrigin.GetComponent<AStarOrigin>().reachGoal || !passBoidRules)
+        {
+            movementDir = new Vector3(movementDir.x,0,movementDir.z);
+            //Normalize Vector
+            movementDir.Normalize();
+            //move boid
+            this.transform.Translate(movementDir * boidSpeed * Time.deltaTime);
+        }
     }
+    #region Flocking Rules
     /// <summary>
     /// Maintains the distance with other neighbors in the flock to avoid collision
     /// </summary>
     private void SeparationRule()
     {
-        Vector3 DirFromBoid = Vector3.zero;
+        //Vector3 DirFromBoid = Vector3.zero;
         for (int i = 0; i < otherBoids.Count; i++)
         {
             //Check if other boids is within the avoidance radius of this boid
             if (Vector3.Distance(this.transform.position, otherBoids[i].transform.position) < avoidanceRadius)
             {
-                Debug.Log(otherBoids[i].name);
+                if (showDebug)
+                {
+                    Debug.Log(otherBoids[i].name);
+                }
+                passBoidRules = false;//Did not pass Rule
                 //obtain the direction away from other boids
-                DirFromBoid += this.transform.position-otherBoids[i].transform.position;//[NOTE:]Direction from otherboid to this boid
+                movementDir += this.transform.position-otherBoids[i].transform.position;//[NOTE:]Direction from otherboid to this boid
             }
         }
-        DirFromBoid.Normalize();
-        //moves this boid away from neighboring boids
-        this.transform.Translate(DirFromBoid * separationSpeed * Time.deltaTime);
     }
     /// <summary>
     /// Maintains a minimum distance with the flock's center
     /// </summary>
     private void CohesionRule()
     {
-        
+        //Check if boid is far away or too close from flock origin 
         if (Vector3.Distance(this.transform.position, flockOrigin.transform.position) > outerOriginRadius)
         {
-            Vector3 DirToOrigin = flockOrigin.transform.position - this.transform.position;//[NOTE:]Direction from this boid to origin
-            //moves this boid towards the flock's center
-            this.transform.Translate(DirToOrigin * avoidOriginSpeed * Time.deltaTime);
-            
+            movementDir += flockOrigin.transform.position - this.transform.position;//[NOTE:]Direction from this boid to origin
+            passBoidRules = false;
         }
         else if (Vector3.Distance(this.transform.position, flockOrigin.transform.position) < innerOriginRadius)
         {
-            Vector3 DirFromOrigin = this.transform.position - flockOrigin.transform.position;//[NOTE:]Direction from origin to this boid
-            //moves this boid away from the flock's center
-            this.transform.Translate(DirFromOrigin * avoidOriginSpeed *Time.deltaTime);
+            movementDir += this.transform.position - flockOrigin.transform.position;//[NOTE:]Direction from origin to this boid
+            passBoidRules = false;
         }
     }
+    /// <summary>
+    /// Move in the same direction & velocity
+    /// </summary>
     private void AlignmentRule()
     {
+        //Align Speed
+        curAlignTime += Time.deltaTime;
+        if (curAlignTime >= maxAlignTime)
+        {
+            curAlignTime = 0;
+            SetBoidSpeed();
+            movementDir = Leader.transform.position - flockOrigin.transform.position;
+            if (showDebug)
+            {
+                Debug.Log("New Speed: " + boidSpeed);
+                Debug.Log("Direction: " + movementDir);
+            }
+        }
 
+    }
+    #endregion
+    /// <summary>
+    /// Set Boid speed based on if random option was selected
+    /// </summary>
+    private void SetBoidSpeed()
+    {
+        if (randomSpeed)
+        {
+            boidSpeed = Random.Range(flockSpeed - (flockSpeed * 0.9f), flockSpeed + Random.Range(0, 0.1f));
+        }
+        else
+        {
+            boidSpeed = flockSpeed * 0.8f;
+        }
     }
     #region Debug
     private void OnDrawGizmos()
     {
-        DrawAvoidanceParams();
-        DrawCohesionParams();
+        if (showDebug)
+        {
+            DrawAvoidanceParams();
+            DrawCohesionParams();
+        }
     }
     /// <summary>
     /// Draws the avoidance properties in the Scene view

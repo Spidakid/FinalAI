@@ -9,8 +9,8 @@ public class AStarOrigin : MonoBehaviour
     [Tooltip("The object to reach")]
     public Transform goalPos;
     private Node startNode, goalNode;
-
-    public float Speed = 1.0f;
+    [HideInInspector]
+    public float Speed;
 
     public ArrayList pathArray;
     //Time
@@ -25,6 +25,9 @@ public class AStarOrigin : MonoBehaviour
     //private int prevPathCount = 0;
     [HideInInspector]
     public bool isStopped = false;//stops the path follow, but keeps pathfinding
+    [HideInInspector]
+    public bool reachGoal = false;//reached goal
+    public bool showDebug = false;
     // Use this for initialization
     void Start()
     {
@@ -36,6 +39,7 @@ public class AStarOrigin : MonoBehaviour
         //prevPathCount = pathArray.Count;
         curPathindex = 0;//init
         this.intervalTime = goalPos.GetComponent<AStarNavigation>().intervalTime;
+        this.Speed = goalPos.GetComponent<AStarNavigation>().Speed;
         //flock origin ref
         boidOrigin = this.GetComponent<BoidOrigin>();
     }
@@ -64,7 +68,11 @@ public class AStarOrigin : MonoBehaviour
         ////Finds a path every interval
         if (currentTime >= intervalTime)
         {
-            Debug.Log("RESET!");
+            if (showDebug)
+            {
+                Debug.Log("RESET!");
+            }
+            
             ResetPathfinding();
         }
     }
@@ -130,15 +138,24 @@ public class AStarOrigin : MonoBehaviour
         }
         else if (curNodeVector == goalPos.position && Vector3.Distance(this.transform.position, goalPos.position) < boidOrigin.distanceFromLeader || Vector3.Distance(this.transform.position, goalPos.position) < boidOrigin.distanceFromLeader)
         {
-            Debug.Log("Goal Reached!");
+            reachGoal = true;
+            if (showDebug)
+            {
+                Debug.Log("Goal Reached!");
+            }
             return;
         }
         else if (Vector3.Distance(this.transform.position, curNodeVector) < this.nodeRadius)
         {
+            
             //Check if current node reached the goal
             if (curNodeVector == goalPos.position)
             {
-                Debug.Log("Goal Reached!");
+                reachGoal = true;
+                if (showDebug)
+                {
+                    Debug.Log("Goal Reached!");
+                }  
                 return;
             }
             curPathindex++;
@@ -149,6 +166,7 @@ public class AStarOrigin : MonoBehaviour
                 curPathindex = 0;
             }
         }
+        reachGoal = false;
         //Path Follow and Steering algorithm
         Vector3 objToCurNode = curNodeVector - this.transform.position;
         this.transform.rotation = Quaternion.LookRotation(objToCurNode);//Rotate Agent to face node
@@ -181,25 +199,29 @@ public class AStarOrigin : MonoBehaviour
     #region Debug
     void OnDrawGizmos()
     {
-        if (pathArray == null)
-            return;
-
-        if (pathArray.Count > 0)
+        if (showDebug)
         {
-            int index = 1;
-            foreach (Vector3 position in pathArray)
+            if (pathArray == null)
+                return;
+
+            if (pathArray.Count > 0)
             {
-                if (index < pathArray.Count)
+                int index = 1;
+                foreach (Vector3 position in pathArray)
                 {
-                    Vector3 nextPosition = (Vector3)pathArray[index];
-                    Debug.DrawLine(position, nextPosition, lineColor);
-                    //Sphere Debug Drawing
-                    Gizmos.color = nodeColor;
-                    Gizmos.DrawSphere(position, nodeRadius);
-                    index++;
-                }
-            };
+                    if (index < pathArray.Count)
+                    {
+                        Vector3 nextPosition = (Vector3)pathArray[index];
+                        Debug.DrawLine(position, nextPosition, lineColor);
+                        //Sphere Debug Drawing
+                        Gizmos.color = nodeColor;
+                        Gizmos.DrawSphere(position, nodeRadius);
+                        index++;
+                    }
+                };
+            }
         }
+        
         
     }
     #endregion

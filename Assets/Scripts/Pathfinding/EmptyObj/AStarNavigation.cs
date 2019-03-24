@@ -28,6 +28,7 @@ public class AStarNavigation : MonoBehaviour
     private int prevPathCount = 0;
     [HideInInspector]
     public bool isStopped = false;//stops the path follow, but keeps pathfinding
+    public bool showDebug = false;
     // Use this for initialization
     void Start()
     {
@@ -64,7 +65,10 @@ public class AStarNavigation : MonoBehaviour
         ////Finds a path every interval
         if (currentTime >= intervalTime)
         {
-            Debug.Log("RESET!");
+            if (showDebug)
+            {
+                Debug.Log("RESET!");
+            }
             ResetPathfinding();
         }
     }
@@ -130,7 +134,10 @@ public class AStarNavigation : MonoBehaviour
         }
         else if (curNodeVector == goalPos.position && Vector3.Distance(this.transform.position, goalPos.position) < this.stopRadius || Vector3.Distance(this.transform.position, goalPos.position) < this.stopRadius)
         {
-            Debug.Log("Goal Reached!");
+            if (showDebug)
+            {
+                Debug.Log("Goal Reached!");
+            }
             return;
         }
         else if (Vector3.Distance(this.transform.position, curNodeVector) < this.nodeRadius)
@@ -138,7 +145,10 @@ public class AStarNavigation : MonoBehaviour
             //Check if current node reached the goal
             if (curNodeVector == goalPos.position)
             {
-                Debug.Log("Goal Reached!");
+                if (showDebug)
+                {
+                    Debug.Log("Goal Reached!");
+                }
                 return;
             }
             curPathindex++;
@@ -181,28 +191,32 @@ public class AStarNavigation : MonoBehaviour
     #region Debug
     void OnDrawGizmos()
     {
-        Debug.DrawLine(this.transform.position, this.transform.position + this.transform.forward * 3, Color.red);
-        if (pathArray == null)
-            return;
-
-        if (pathArray.Count > 0)
+        if (showDebug)
         {
-            int index = 1;
-            foreach (Vector3 position in pathArray)
+            Debug.DrawLine(this.transform.position, this.transform.position + this.transform.forward * 3, Color.red);
+            if (pathArray == null)
+                return;
+
+            if (pathArray.Count > 0)
             {
-                if (index < pathArray.Count)
+                int index = 1;
+                foreach (Vector3 position in pathArray)
                 {
-                    Vector3 nextPosition = (Vector3)pathArray[index];
-                    Debug.DrawLine(position, nextPosition, lineColor);
-                    //Sphere Debug Drawing
-                    Gizmos.color = nodeColor;
-                    Gizmos.DrawSphere(position,nodeRadius);
-                    index++;
-                }
-            };
-            Gizmos.color = stopColor;
-            Gizmos.DrawSphere(goalPos.position, stopRadius);
+                    if (index < pathArray.Count)
+                    {
+                        Vector3 nextPosition = (Vector3)pathArray[index];
+                        Debug.DrawLine(position, nextPosition, lineColor);
+                        //Sphere Debug Drawing
+                        Gizmos.color = nodeColor;
+                        Gizmos.DrawSphere(position, nodeRadius);
+                        index++;
+                    }
+                };
+                Gizmos.color = stopColor;
+                Gizmos.DrawSphere(goalPos.position, stopRadius);
+            }
         }
+        
     }
     #endregion
 }
