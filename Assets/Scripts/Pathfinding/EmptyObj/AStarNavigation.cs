@@ -29,6 +29,8 @@ public class AStarNavigation : MonoBehaviour
     [HideInInspector]
     public bool isStopped = false;//stops the path follow, but keeps pathfinding
     public bool showDebug = false;
+    [HideInInspector]
+    public bool reachedGoal = false;
     // Use this for initialization
     void Start()
     {
@@ -138,6 +140,7 @@ public class AStarNavigation : MonoBehaviour
             {
                 Debug.Log("Goal Reached!");
             }
+            reachedGoal = true;
             return;
         }
         else if (Vector3.Distance(this.transform.position, curNodeVector) < this.nodeRadius)
@@ -149,6 +152,7 @@ public class AStarNavigation : MonoBehaviour
                 {
                     Debug.Log("Goal Reached!");
                 }
+                reachedGoal = true;
                 return;
             }
             curPathindex++;
@@ -159,6 +163,7 @@ public class AStarNavigation : MonoBehaviour
                 curPathindex = 0;
             }
         }
+        reachedGoal = false;
         //Path Follow and Steering algorithm
         Vector3 objToCurNode = curNodeVector - this.transform.position;
         this.transform.rotation = Quaternion.LookRotation(objToCurNode);//Rotate Agent to face node
@@ -193,7 +198,6 @@ public class AStarNavigation : MonoBehaviour
     {
         if (showDebug)
         {
-            Debug.DrawLine(this.transform.position, this.transform.position + this.transform.forward * 3, Color.red);
             if (pathArray == null)
                 return;
 

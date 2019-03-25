@@ -64,6 +64,8 @@
     <Compile Include="Assets\Scripts\Flocking\Boid.cs" />
     <Compile Include="Assets\Scripts\Flocking\BoidLeader.cs" />
     <Compile Include="Assets\Scripts\Flocking\BoidOrigin.cs" />
+    <Compile Include="Assets\Scripts\GovForces\GovForceAudio.cs" />
+    <Compile Include="Assets\Scripts\GovForces\GovForceFSM.cs" />
     <Compile Include="Assets\Scripts\Pathfinding\EmptyObj\AStarNavigation.cs" />
     <Compile Include="Assets\Scripts\Pathfinding\EmptyObj\GridManager.cs" />
     <Compile Include="Assets\Scripts\Pathfinding\Programming\AStar.cs" />
