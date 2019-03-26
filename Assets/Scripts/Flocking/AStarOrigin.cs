@@ -26,7 +26,7 @@ public class AStarOrigin : MonoBehaviour
     [HideInInspector]
     public bool isStopped = false;//stops the path follow, but keeps pathfinding
     [HideInInspector]
-    public bool reachGoal = false;//reached goal
+    public bool reachedGoal = false;//reached goal
     public bool showDebug = false;
     // Use this for initialization
     void Start()
@@ -138,7 +138,10 @@ public class AStarOrigin : MonoBehaviour
         }
         else if (curNodeVector == goalPos.position && Vector3.Distance(this.transform.position, goalPos.position) < boidOrigin.distanceFromLeader || Vector3.Distance(this.transform.position, goalPos.position) < boidOrigin.distanceFromLeader)
         {
-            reachGoal = true;
+            if (!reachedGoal)
+            {
+                reachedGoal = true;
+            }
             if (showDebug)
             {
                 Debug.Log("Goal Reached!");
@@ -151,7 +154,10 @@ public class AStarOrigin : MonoBehaviour
             //Check if current node reached the goal
             if (curNodeVector == goalPos.position)
             {
-                reachGoal = true;
+                if (!reachedGoal)
+                {
+                    reachedGoal = true;
+                }
                 if (showDebug)
                 {
                     Debug.Log("Goal Reached!");
@@ -166,7 +172,10 @@ public class AStarOrigin : MonoBehaviour
                 curPathindex = 0;
             }
         }
-        reachGoal = false;
+        if (reachedGoal)
+        {
+            reachedGoal = false;
+        }
         //Path Follow and Steering algorithm
         Vector3 objToCurNode = curNodeVector - this.transform.position;
         this.transform.rotation = Quaternion.LookRotation(objToCurNode);//Rotate Agent to face node

@@ -22,6 +22,8 @@ public class AStarNavigation : MonoBehaviour
     public Color nodeColor = Color.magenta;
     [Tooltip("The stopping radius before reaching the final destination")]
     public float stopRadius = 1f;
+    [HideInInspector]
+    public float initialstopRadius;
     public Color stopColor = Color.green;
 
     private int curPathindex;
@@ -34,6 +36,7 @@ public class AStarNavigation : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        initialstopRadius = stopRadius;
         //AStar Calculated Path
         pathArray = new ArrayList();
         startPos = this.transform;
@@ -54,6 +57,10 @@ public class AStarNavigation : MonoBehaviour
             if (curPathindex < pathArray.Count)
             {
                 FollowPath();
+            }//Check if current path index is out of bounds
+            else if (curPathindex >= pathArray.Count && !reachedGoal)
+            {
+                curPathindex = 0;
             }
         }
         
@@ -140,7 +147,10 @@ public class AStarNavigation : MonoBehaviour
             {
                 Debug.Log("Goal Reached!");
             }
-            reachedGoal = true;
+            if (!reachedGoal)
+            {
+                reachedGoal = true;
+            }
             return;
         }
         else if (Vector3.Distance(this.transform.position, curNodeVector) < this.nodeRadius)
@@ -152,7 +162,10 @@ public class AStarNavigation : MonoBehaviour
                 {
                     Debug.Log("Goal Reached!");
                 }
-                reachedGoal = true;
+                if (!reachedGoal)
+                {
+                    reachedGoal = true;
+                }
                 return;
             }
             curPathindex++;
@@ -163,12 +176,14 @@ public class AStarNavigation : MonoBehaviour
                 curPathindex = 0;
             }
         }
-        reachedGoal = false;
+        if (reachedGoal)
+        {
+            reachedGoal = false;
+        }
         //Path Follow and Steering algorithm
         Vector3 objToCurNode = curNodeVector - this.transform.position;
-        this.transform.rotation = Quaternion.LookRotation(objToCurNode);//Rotate Agent to face node
+        this.transform.rotation = Quaternion.LookRotation(new Vector3(objToCurNode.x,0,objToCurNode.z));//Rotate Agent to face node
         this.transform.Translate(Vector3.forward * Speed * Time.deltaTime);//Move Agent
-       
     }
     /// <summary>
     /// Set a new destination to travel
@@ -189,9 +204,10 @@ public class AStarNavigation : MonoBehaviour
     {
         //reset refresh timer
         currentTime = 0.0f;
-        prevPathCount = pathArray.Count;
+        
         //Generate new A* path
         FindPath();
+        prevPathCount = pathArray.Count;
     }
     #region Debug
     void OnDrawGizmos()

@@ -72,7 +72,7 @@ public class Boid : MonoBehaviour
         SeparationRule();
         CohesionRule();
         //Check if goal is reached and if flocking checks have been passed
-        if (!flockOrigin.GetComponent<AStarOrigin>().reachGoal && passBoidRules)
+        if (!flockOrigin.GetComponent<AStarOrigin>().reachedGoal && passBoidRules)
         {
             AlignmentRule();
         }
@@ -80,7 +80,7 @@ public class Boid : MonoBehaviour
         {
             boidSpeed = adjustSpeed;
         }
-        if (!flockOrigin.GetComponent<AStarOrigin>().reachGoal || !passBoidRules)
+        if (!flockOrigin.GetComponent<AStarOrigin>().reachedGoal || !passBoidRules)
         {
             movementDir = new Vector3(movementDir.x,0,movementDir.z);
             //Normalize Vector

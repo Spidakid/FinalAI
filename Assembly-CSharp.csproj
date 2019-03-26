@@ -60,17 +60,25 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Scripts\AI\GovForces\Anim States\GovPatrolState.cs" />
+    <Compile Include="Assets\Scripts\AI\GovForces\Anim States\GovSetGoalState.cs" />
+    <Compile Include="Assets\Scripts\AI\GovForces\Anim States\GovShootState.cs" />
+    <Compile Include="Assets\Scripts\AI\GovForces\GovForceAudio.cs" />
+    <Compile Include="Assets\Scripts\AI\GovForces\GovForceFOV.cs" />
+    <Compile Include="Assets\Scripts\AI\GovForces\GovForceFSM.cs" />
+    <Compile Include="Assets\Scripts\Aspect.cs" />
     <Compile Include="Assets\Scripts\Flocking\AStarOrigin.cs" />
     <Compile Include="Assets\Scripts\Flocking\Boid.cs" />
     <Compile Include="Assets\Scripts\Flocking\BoidLeader.cs" />
     <Compile Include="Assets\Scripts\Flocking\BoidOrigin.cs" />
-    <Compile Include="Assets\Scripts\GovForces\GovForceAudio.cs" />
-    <Compile Include="Assets\Scripts\GovForces\GovForceFSM.cs" />
+    <Compile Include="Assets\Scripts\ObjectPooling.cs" />
     <Compile Include="Assets\Scripts\Pathfinding\EmptyObj\AStarNavigation.cs" />
     <Compile Include="Assets\Scripts\Pathfinding\EmptyObj\GridManager.cs" />
     <Compile Include="Assets\Scripts\Pathfinding\Programming\AStar.cs" />
     <Compile Include="Assets\Scripts\Pathfinding\Programming\Node.cs" />
     <Compile Include="Assets\Scripts\Pathfinding\Programming\SortedList.cs" />
+    <Compile Include="Assets\Scripts\Projectile.cs" />
+    <Compile Include="Assets\Scripts\Waypoint.cs" />
     <Reference Include="Unity.TextMeshPro.Editor">
       <HintPath>C:/Users/Spidakid/Documents/ReposGit/Final_AI/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
     </Reference>
