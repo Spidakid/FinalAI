@@ -52,6 +52,31 @@ public class GovForceFOV
             }
         }
     }
+    public List<GameObject> GetAllVisibleObjects(Transform _transform)
+    {
+        FieldOfVision(_transform);
+        return visibleTargets;
+    }
+    public GameObject GetFirstVisibleObject(Transform _transform, params Aspect.AspectName[] _aspects)
+    {
+        FieldOfVision(_transform);
+        for (int i = 0;i < visibleTargets.Count; i++)
+        {
+            Aspect targetAspect = visibleTargets[i].GetComponent<Aspect>();
+            //Check if visible object has aspect script 
+            if (targetAspect != null)
+            {
+                for (int j = 0; j < _aspects.Length; j++)
+                {
+                    if (targetAspect.aspect == _aspects[j])
+                    {
+                        return visibleTargets[i];
+                    }
+                }
+            }
+        }
+        return null;
+    } 
     #region Debug
     public void OnDrawGizmos(Transform _transform,bool _isDebugOn)
     {

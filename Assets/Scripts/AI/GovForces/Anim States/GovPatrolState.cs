@@ -5,20 +5,32 @@ using UnityEngine;
 public class GovPatrolState : StateMachineBehaviour
 {
     AStarNavigation astar;
+    GovForceFSM GovFSM;
+    GameObject visibleTarget;
     // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
+        GovFSM = animator.GetComponent<GovForceFSM>();
         astar = animator.GetComponent<AStarNavigation>();
-        if (astar.stopRadius != astar.initialstopRadius)
+        astar.stopRadius = astar.initialstopRadius;//set to the original stopRadius
+        visibleTarget = GovFSM.GetFirstVisibleObject(GovFSM.EnemyAspects);
+        if (visibleTarget != null)
         {
-            astar.stopRadius = astar.initialstopRadius;//set to the original stopRadius
+            //Transition to Chase
+            animator.SetBool("EnemyLost",false);
         }
     }
 
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        if (astar.reachedGoal)
+        visibleTarget = GovFSM.GetFirstVisibleObject(GovFSM.EnemyAspects);
+        if (visibleTarget != null)
+        {
+            //Transition to chase
+            animator.SetBool("EnemyLost", false);
+        }
+        else if (astar.reachedGoal)
         {
             animator.SetBool("WayPointReached",true);
         }
@@ -28,17 +40,5 @@ public class GovPatrolState : StateMachineBehaviour
     //override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     //{
     //    
-    //}
-
-    // OnStateMove is called right after Animator.OnAnimatorMove()
-    //override public void OnStateMove(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
-    //{
-    //    // Implement code that processes and affects root motion
-    //}
-
-    // OnStateIK is called right after Animator.OnAnimatorIK()
-    //override public void OnStateIK(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
-    //{
-    //    // Implement code that sets up animation IK (inverse kinematics)
     //}
 }

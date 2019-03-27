@@ -2280,7 +2280,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1772717761}
   m_LocalRotation: {x: 0, y: 0.25772306, z: 0, w: 0.9662188}
-  m_LocalPosition: {x: 20.84, y: 0.25, z: 15.88}
+  m_LocalPosition: {x: 21.15, y: 0.25, z: 12.41}
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_Children: []
   m_Father: {fileID: 0}
@@ -2432,11 +2432,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 81afe6b58ef5c474bb051f41c099b303, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sightDistance: 3
-  fieldOfView: 45
+  EnemyAspects: 00000000
+  sightDistance: 6
+  fieldOfView: 70
   bullet: {fileID: 4396613407486495811, guid: 1b5ca66a9131376419368de1234bdce5, type: 3}
-  shootInterval: 3
-  shootRange: 2
+  shootInterval: 5
+  startShootingRange: 3
+  turnSpeed: 2
   showDebug: 1
 --- !u!95 &1772717770
 Animator:
@@ -2677,7 +2679,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1916633552}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 22.55, y: 0.25, z: 18.92}
+  m_LocalPosition: {x: 27.3, y: 0.25, z: 17.7}
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_Children: []
   m_Father: {fileID: 0}

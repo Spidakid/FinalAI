@@ -60,6 +60,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Scripts\AI\GovForces\Anim States\GovChaseState.cs" />
+    <Compile Include="Assets\Scripts\AI\GovForces\Anim States\GovLastPosState.cs" />
     <Compile Include="Assets\Scripts\AI\GovForces\Anim States\GovPatrolState.cs" />
     <Compile Include="Assets\Scripts\AI\GovForces\Anim States\GovSetGoalState.cs" />
     <Compile Include="Assets\Scripts\AI\GovForces\Anim States\GovShootState.cs" />

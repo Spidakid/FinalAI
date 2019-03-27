@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class GovForceFSM : MonoBehaviour
 {
+    public Aspect.AspectName[] EnemyAspects = {
+        Aspect.AspectName.GovForce
+    };
     [Header("Field Of Vision")]
     public float sightDistance;
     [Range(0,180)]
@@ -14,7 +17,9 @@ public class GovForceFSM : MonoBehaviour
     [Tooltip("Shoot every X seconds")]
     public float shootInterval = 3f;
     [Tooltip("Stopping range in which to shoot while chasing")]
-    public float shootRange=2f;
+    public float startShootingRange = 2.5f;
+    [Tooltip("How fast to turn while in shoot state")]
+    public float turnSpeed = 2f;
     public bool showDebug = false;
 
     private GovForceFOV GovForceFOV;
@@ -32,7 +37,14 @@ public class GovForceFSM : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        GovForceFOV.Update(this.transform);
+    }
+    public List<GameObject> GetVisibleObjects()
+    {
+        return GovForceFOV.GetAllVisibleObjects(this.transform);
+    }
+    public GameObject GetFirstVisibleObject(params Aspect.AspectName[] _aspectNames)
+    {
+        return GovForceFOV.GetFirstVisibleObject(this.transform,_aspectNames);
     }
     #region Debug
     private void OnValidate()
