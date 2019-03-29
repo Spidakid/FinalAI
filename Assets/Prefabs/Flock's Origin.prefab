@@ -1,0 +1,73 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &3856938571729585968
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3856938571729585983}
+  - component: {fileID: 3856938571729585981}
+  - component: {fileID: 3856938571729585982}
+  m_Layer: 0
+  m_Name: Flock's Origin
+  m_TagString: Untagged
+  m_Icon: {fileID: -964228994112308473, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3856938571729585983
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3856938571729585968}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 42.69, y: 0.25, z: 9.299097}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3856938571729585981
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3856938571729585968}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 613e11aca015cd844a1b9f15ab3609d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  goalPos: {fileID: 0}
+  Speed: 1
+  intervalTime: 1
+  lineColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  nodeRadius: 0.5
+  nodeColor: {r: 1, g: 0, b: 1, a: 1}
+  isStopped: 0
+  reachedGoal: 0
+  showDebug: 0
+--- !u!114 &3856938571729585982
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3856938571729585968}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01afed2e5b01eca439f79d32b7102147, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  astarSpeedAdjust: 0.4
+  outerOriginRadius: 5.69
+  originOuterColor: {r: 0, g: 0, b: 0, a: 1}
+  leader: {fileID: 0}
+  distanceFromLeader: 3.5
+  showDebug: 1

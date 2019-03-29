@@ -6,7 +6,7 @@ public class Boid : MonoBehaviour
 {
     public GameObject Leader;
     public GameObject flockOrigin;
-    //current boid Speed
+    //current boid kinetic Speed
     private float boidSpeed = 0.4f;
 
     [Header("Separation Parameters")]
@@ -14,14 +14,10 @@ public class Boid : MonoBehaviour
     public float avoidanceRadius = 2.77f;
     private Color avoidanceColor = Color.green;
 
-    //Cohesion 
-    [Header("Cohesion Parameters")]
-    [Tooltip("Maximum distance to be away origin")]
-    public float outerOriginRadius = 5f;
-    [Tooltip("Minimum from the center of the origin")]
-    private static float innerOriginRadius = 0.8f;
-    public Color originOuterColor = Color.black;
-    private static Color originInnerColor = Color.black;
+    //Cohesion
+    private BoidOrigin flockOriginStats;
+    [HideInInspector]
+    public bool isWithinOrigin = false;//is boid in within the flocks origin
 
     //Alignment
     [Header("Alignment Parameters")]
@@ -42,7 +38,9 @@ public class Boid : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        this.transform.rotation = Quaternion.Euler(Vector3.zero);//reset rotation to zero
         otherBoids = new List<GameObject>();
+        flockOriginStats = flockOrigin.GetComponent<BoidOrigin>();
         //Sets object tag as Boid
         if (this.tag.ToLower() == "untagged")
         {
@@ -52,8 +50,6 @@ public class Boid : MonoBehaviour
         {
             Leader.tag = "Boid";
         }
-        //create a waypoint
-        waypoint = new GameObject(this.name +"'s waypoint");
         //Retrieve all other boid gameobjects
         otherBoids.AddRange(GameObject.FindGameObjectsWithTag(this.tag));
         otherBoids.Remove(this.gameObject);
@@ -61,7 +57,7 @@ public class Boid : MonoBehaviour
         flockSpeed = flockOrigin.GetComponent<AStarOrigin>().Speed;
         adjustSpeed = flockSpeed + boidSpeed;
         SetBoidSpeed();
-        movementDir = Leader.transform.position - flockOrigin.transform.position;
+        movementDir = Leader.transform.position - flockOrigin.transform.position;  
     }
 
     // Update is called once per frame
@@ -117,15 +113,21 @@ public class Boid : MonoBehaviour
     private void CohesionRule()
     {
         //Check if boid is far away or too close from flock origin 
-        if (Vector3.Distance(this.transform.position, flockOrigin.transform.position) > outerOriginRadius)
+        if (Vector3.Distance(this.transform.position, flockOrigin.transform.position) >flockOriginStats.outerOriginRadius)
         {
             movementDir += flockOrigin.transform.position - this.transform.position;//[NOTE:]Direction from this boid to origin
             passBoidRules = false;
+            isWithinOrigin = false;
         }
-        else if (Vector3.Distance(this.transform.position, flockOrigin.transform.position) < innerOriginRadius)
+        else if (Vector3.Distance(this.transform.position, flockOrigin.transform.position) < BoidOrigin.innerOriginRadius)
         {
             movementDir += this.transform.position - flockOrigin.transform.position;//[NOTE:]Direction from origin to this boid
             passBoidRules = false;
+            isWithinOrigin = false;
+        }
+        else
+        {
+            isWithinOrigin = true;
         }
     }
     /// <summary>
@@ -140,11 +142,6 @@ public class Boid : MonoBehaviour
             curAlignTime = 0;
             SetBoidSpeed();
             movementDir = Leader.transform.position - flockOrigin.transform.position;
-            if (showDebug)
-            {
-                Debug.Log("New Speed: " + boidSpeed);
-                Debug.Log("Direction: " + movementDir);
-            }
         }
 
     }
@@ -169,7 +166,6 @@ public class Boid : MonoBehaviour
         if (showDebug)
         {
             DrawAvoidanceParams();
-            DrawCohesionParams();
         }
     }
     /// <summary>
@@ -179,18 +175,6 @@ public class Boid : MonoBehaviour
     {
         Gizmos.color = avoidanceColor;
         Gizmos.DrawWireSphere(this.transform.position, avoidanceRadius);
-    }
-    /// <summary>
-    /// Draws the cohesion properties in the Scene view
-    /// </summary>
-    private void DrawCohesionParams()
-    {
-        //minimum flock origin radius
-        Gizmos.color = originInnerColor;
-        Gizmos.DrawSphere(flockOrigin.transform.position,innerOriginRadius);
-        //maximum flock origin radius
-        Gizmos.color = originOuterColor;
-        Gizmos.DrawWireSphere(flockOrigin.transform.position,outerOriginRadius);
     }
     #endregion
 }
