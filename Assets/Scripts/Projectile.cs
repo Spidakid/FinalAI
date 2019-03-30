@@ -19,7 +19,7 @@ public class Projectile : MonoBehaviour
     }
     private void OnTriggerEnter(Collider other)
     {
-        Aspect aspectRef = other.GetComponent<Aspect>();
+        SightTouchAspect aspectRef = other.GetComponent<SightTouchAspect>();
         if (aspectRef != null)
         {
             if (aspectRef.aspect == Aspect.AspectName.GovForce ||

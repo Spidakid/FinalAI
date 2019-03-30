@@ -5,7 +5,8 @@ using UnityEngine;
 public class GovForceFSM : MonoBehaviour
 {
     public Aspect.AspectName[] EnemyAspects = {
-        Aspect.AspectName.GovForce
+        Aspect.AspectName.Hitman,
+        Aspect.AspectName.Pacifist
     };
     [Header("Field Of Vision")]
     public float sightDistance;
@@ -22,26 +23,30 @@ public class GovForceFSM : MonoBehaviour
     public float turnSpeed = 2f;
     public bool showDebug = false;
 
-    private GovForceFOV GovForceFOV;
+    private FieldOfView GovForceFOV;
     // Start is called before the first frame update
     void Start()
     {
         if (GovForceFOV == null)
         {
-            GovForceFOV = new GovForceFOV(fieldOfView, sightDistance);
+            GovForceFOV = new FieldOfView(fieldOfView, sightDistance);
         }
         ObjectPooling.Instance.InitializePool(bullet);
         GovForceFOV.Start();
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-    }
+    /// <summary>
+    /// Get All visible objects not in the ignore raycast layer
+    /// </summary>
+    /// <returns>returns a list of all objects visible</returns>
     public List<GameObject> GetVisibleObjects()
     {
         return GovForceFOV.GetAllVisibleObjects(this.transform);
     }
+    /// <summary>
+    /// Retrieve the first visible object based on the specified apsects to look for
+    /// </summary>
+    /// <param name="_aspectNames">Aspect(s) to look out for</param>
+    /// <returns>Retrieve the first visible object of specficied aspect(s)</returns>
     public GameObject GetFirstVisibleObject(params Aspect.AspectName[] _aspectNames)
     {
         return GovForceFOV.GetFirstVisibleObject(this.transform,_aspectNames);
@@ -49,7 +54,7 @@ public class GovForceFSM : MonoBehaviour
     #region Debug
     private void OnValidate()
     {
-        GovForceFOV = new GovForceFOV(fieldOfView, sightDistance);
+        GovForceFOV = new FieldOfView(fieldOfView, sightDistance);
     }
     private void OnDrawGizmos()
     {

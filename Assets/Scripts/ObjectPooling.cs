@@ -32,6 +32,11 @@ public sealed class ObjectPooling : MonoBehaviour {
     /// <param name="_isexpanding">increase the amount of objects in the pool when none is available</param>
 	public void InitializePool(GameObject _poolobj,int _startingpool = 1,bool _isexpanding=true)
     {
+        //check if list has been initialized
+        if (_poolobjects == null)
+        {
+            _poolobjects = new List<GameObject>();
+        }
         poolObject = _poolobj;
         startingPool = _startingpool;
         wantToExpand = _isexpanding;

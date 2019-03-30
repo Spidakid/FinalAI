@@ -16,7 +16,7 @@ public class GovForceAudio : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        SoundObjectDetection();
+        AddSoundObject();
 
         astar = this.GetComponent<AStarNavigation>();
         audio = this.GetComponent<AudioSource>();
@@ -31,7 +31,7 @@ public class GovForceAudio : MonoBehaviour
     /// <summary>
     /// Creates an empty object to detect other colliders
     /// </summary>
-    private void SoundObjectDetection()
+    private void AddSoundObject()
     {
         //Creates an empty object
         soundObj = new GameObject("Sound");
@@ -40,6 +40,10 @@ public class GovForceAudio : MonoBehaviour
        
         soundObj.AddComponent<SphereCollider>(); //Adds a sphere collider to the empty object
         soundObj.GetComponent<SphereCollider>().isTrigger = true;//Set empty object sphere collider to be a trigger
+
+        //set hearing aspect to GovForce
+        soundObj.AddComponent<HearAspect>();
+        soundObj.GetComponent<HearAspect>().aspect = Aspect.AspectName.GovForce;
     }
     /// <summary>
     /// Plays the sound depending on if astar goal is reached

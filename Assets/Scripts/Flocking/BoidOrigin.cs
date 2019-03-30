@@ -39,7 +39,7 @@ public class BoidOrigin : MonoBehaviour
     {
         if (showDebug)
         {
-            this.transform.position = leader.transform.position + (leader.transform.forward * -1) * distanceFromLeader;
+            //this.transform.position = leader.transform.position + (leader.transform.forward * -1) * distanceFromLeader;
         }
     }
     private void OnDrawGizmos()

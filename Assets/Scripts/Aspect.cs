@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Aspect : MonoBehaviour
+public class Aspect
 {
     public enum AspectName
     {
@@ -11,5 +11,4 @@ public class Aspect : MonoBehaviour
         Hitman,
         Pacifist
     }
-    public AspectName aspect;
 }
