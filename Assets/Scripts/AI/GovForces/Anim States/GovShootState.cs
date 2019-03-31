@@ -34,9 +34,15 @@ public class GovShootState : StateMachineBehaviour
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
+        
         visibleTarget = GovFSM.GetFirstVisibleObject(GovFSM.EnemyAspects);
         if (visibleTarget != null)
         {
+            //Set destination to visible target
+            if (astar.goalPos.position != visibleTarget.transform.position)
+            {
+                astar.ChangeGoalPosition(visibleTarget.transform.position);
+            }
             currentTime += Time.deltaTime;
             if (currentTime >= MaxTime)
             {

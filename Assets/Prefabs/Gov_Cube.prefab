@@ -274,7 +274,7 @@ GameObject:
   - component: {fileID: 139928160}
   m_Layer: 0
   m_Name: Gov_Cube
-  m_TagString: Untagged
+  m_TagString: GovForce
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -480,7 +480,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   goalPos: {fileID: 0}
-  Speed: 2
+  Speed: 1.8
   intervalTime: 1
   lineColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   nodeRadius: 0.5
@@ -489,7 +489,7 @@ MonoBehaviour:
   initialstopRadius: 0
   stopColor: {r: 0, g: 1, b: 0, a: 1}
   isStopped: 0
-  showDebug: 0
+  showDebug: 1
   reachedGoal: 0
 --- !u!114 &4951874552398223676
 MonoBehaviour:
@@ -504,6 +504,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxSoundRadius: 10
+  hearAspect: 0
   showDebug: 1
 --- !u!114 &4951874552398223677
 MonoBehaviour:
@@ -525,6 +526,7 @@ MonoBehaviour:
   startShootingRange: 3
   turnSpeed: 2
   showDebug: 1
+  isVisionOn: 1
 --- !u!114 &7537653446565363838
 MonoBehaviour:
   m_ObjectHideFlags: 0

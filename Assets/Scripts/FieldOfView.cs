@@ -57,6 +57,18 @@ public class FieldOfView
         FieldOfVision(_transform);
         return visibleTargets;
     }
+    public GameObject GetTargetObject(Transform _transform,GameObject _target)
+    {
+        FieldOfVision(_transform);
+        for (int i = 0; i < visibleTargets.Count; i++)
+        {
+            if (visibleTargets[i] == _target)
+            {
+                return visibleTargets[i];
+            }
+        }
+        return null;
+    }
     public GameObject GetFirstVisibleObject(Transform _transform, params Aspect.AspectName[] _aspects)
     {
         FieldOfVision(_transform);

@@ -7,6 +7,8 @@ TagManager:
   - Obstacle
   - Boid
   - Wall
+  - GovForce
+  - Hitman
   layers:
   - Default
   - TransparentFX

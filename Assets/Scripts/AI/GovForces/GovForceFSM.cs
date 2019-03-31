@@ -22,11 +22,16 @@ public class GovForceFSM : MonoBehaviour
     [Tooltip("How fast to turn while in shoot state")]
     public float turnSpeed = 2f;
     public bool showDebug = false;
-
+    [HideInInspector]
+    public bool isVisionOn = true;//can GovForce see?
     private FieldOfView GovForceFOV;
     // Start is called before the first frame update
     void Start()
     {
+        if (this.tag != "GovForce")
+        {
+            this.tag = "GovForce";
+        }
         if (GovForceFOV == null)
         {
             GovForceFOV = new FieldOfView(fieldOfView, sightDistance);
@@ -40,7 +45,11 @@ public class GovForceFSM : MonoBehaviour
     /// <returns>returns a list of all objects visible</returns>
     public List<GameObject> GetVisibleObjects()
     {
-        return GovForceFOV.GetAllVisibleObjects(this.transform);
+        if (isVisionOn)
+        {
+            return GovForceFOV.GetAllVisibleObjects(this.transform);
+        }
+        return null;
     }
     /// <summary>
     /// Retrieve the first visible object based on the specified apsects to look for
@@ -49,7 +58,11 @@ public class GovForceFSM : MonoBehaviour
     /// <returns>Retrieve the first visible object of specficied aspect(s)</returns>
     public GameObject GetFirstVisibleObject(params Aspect.AspectName[] _aspectNames)
     {
-        return GovForceFOV.GetFirstVisibleObject(this.transform,_aspectNames);
+        if (isVisionOn)
+        {
+            return GovForceFOV.GetFirstVisibleObject(this.transform, _aspectNames);
+        }
+        return null;
     }
     #region Debug
     private void OnValidate()
@@ -58,7 +71,11 @@ public class GovForceFSM : MonoBehaviour
     }
     private void OnDrawGizmos()
     {
-        GovForceFOV.OnDrawGizmos(this.transform,showDebug);
+        if (isVisionOn)
+        {
+            GovForceFOV.OnDrawGizmos(this.transform, showDebug);
+        }
+        
     }
     #endregion
 }

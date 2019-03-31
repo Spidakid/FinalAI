@@ -10,45 +10,105 @@ public class HitmanFSM : MonoBehaviour
     public float fieldOfView = 45f;
 
     [Header("Flee State")]
+    [SerializeField]
+    private GameObject smokeCloud;
     [Tooltip("Distance to avoid obstacles")]
     public float avoidDistance = 5;
     [Tooltip("Amount of smoke grenades hitman has")]
-    public int smokegrenades = 1;
+    private int smokeGrenades = 1;
 
     [Header("Assassinate State")]
     private GameObject contractTarget;
-    
+    private Aspect.AspectName contractAspect;
     public bool showDebug = false;
     private FieldOfView hitmanFOV;
+    [HideInInspector]
+    public bool isBeingChased = false;
     // Start is called before the first frame update
     void Start()
     {
+        NextContract();
+        Debug.Log("Contract: "+contractTarget);
+        if (this.tag != "Hitman")
+        {
+            this.tag = "Hitman";
+        }
         if (hitmanFOV == null)
         {
             hitmanFOV = new FieldOfView(fieldOfView, sightDistance);
         }
         hitmanFOV.Start();
     }
-
-    // Update is called once per frame
-    void Update()
+    /// <summary>
+    /// Creates a Smoke Cloud
+    /// </summary>
+    public void CreateSmokeBubble()
     {
-        //[TODO:] Delete this when done testing vision
-        GameObject visibleTarget = GetFirstVisibleObject(Aspect.AspectName.Pacifist);
+        GameObject smokeobj;
+        //Check if grenades are available
+        if (smokeGrenades != 0)
+        {
+            smokeobj = Instantiate(smokeCloud, this.transform.position, Quaternion.Euler(Vector3.zero));
+            smokeGrenades--;
+        }
     }
     /// <summary>
-    /// Get All visible objects not in the ignore raycast layer
+    /// Get the target object if it is currently within field of view
     /// </summary>
-    /// <returns>returns a list of all objects visible</returns>
-    public List<GameObject> GetVisibleObjects()
+    /// <returns>returns the current contract target within field of view</returns>
+    public GameObject GetVisibleTargetObject()
     {
-        return hitmanFOV.GetAllVisibleObjects(this.transform);
+        return hitmanFOV.GetTargetObject(this.transform,contractTarget);
     }
-    //[TODO:] delete this function when done
-    public GameObject GetFirstVisibleObject(params Aspect.AspectName[] _aspectNames)
+    #region Contract
+    /// <summary>
+    /// Randomly select the next target to assassinate.
+    /// </summary>
+    public void NextContract()
     {
-        return hitmanFOV.GetFirstVisibleObject(this.transform, _aspectNames);
+        //Times to cycle to find a new target if none is found in previous cycles
+        int CycleTime = 0;
+        GameObject[] targetObjs;
+        int randomSelect;
+        string targetType = "";
+        contractTarget = null;
+        
+        while (contractTarget == null && CycleTime < 3)
+        {
+            randomSelect = Random.Range(0, 2);
+            switch (randomSelect)
+            {
+                case 0:
+                    targetType = "GovForce";
+                    break;
+                case 1:
+                    targetType = "Boid";
+                    break;
+                //case 2:
+                //    targetType = "Pacifist";
+                //break;
+                default:
+                    CycleTime++;
+                    break;
+            }
+            targetObjs = GameObject.FindGameObjectsWithTag(targetType);
+            randomSelect = Random.Range(0,targetObjs.Length);
+            //set new contract speculations
+            contractTarget = targetObjs[randomSelect];
+            contractAspect = contractTarget.GetComponent<SightTouchAspect>().aspect;
+        }
+        
+        
     }
+    public GameObject GetContractObject()
+    {
+        return contractTarget;
+    }
+    public Aspect.AspectName GetContractAspect()
+    {
+        return contractAspect;
+    }
+    #endregion
     #region Debug
     private void OnValidate()
     {

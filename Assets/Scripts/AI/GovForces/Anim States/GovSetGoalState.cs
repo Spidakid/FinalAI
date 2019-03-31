@@ -34,7 +34,7 @@ public class GovSetGoalState : StateMachineBehaviour
         }
         else if (animator.GetBool("WayPointReached"))
         {
-            astar.ChangeGoalPosition(astar.goalPos.GetComponent<Waypoint>().GetRandomDestination());
+            astar.ChangeGoalPosition(astar.goalPos.GetComponent<GovWayPoint>().GetRandomDestination());
             //Transition to Patrol
             animator.SetBool("WayPointReached", false);
         }
