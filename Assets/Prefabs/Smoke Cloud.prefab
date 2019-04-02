@@ -121,5 +121,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65da127c282d2cd48b5fefccec8a6884, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spreadSpeed: 6.18
-  maxSpread: 5.7
+  spreadSpeed: 5.05
+  maxSpread: 5.8

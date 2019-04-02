@@ -18,15 +18,10 @@ public class HitmanKillState : StateMachineBehaviour
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        //currentTime = Time.deltaTime;
-        //if (currentTime >= MaxRefreshTime)
-        //{
-        //    grenadeChance = Random.Range(0,10);
-        //}
         //Check if destination is set to Contract Target
         if (astar.goalPos.position != hitFSM.GetContractObject().transform.position)
         {
-            astar.ChangeGoalPosition(hitFSM.GetContractObject().transform.position);
+            astar.goalPos.position = hitFSM.GetContractObject().transform.position;
         }
         //Check if chasing target & being chased & have smoke grenades available
         if (astar.goalPos.position == hitFSM.GetContractObject().transform.position  && hitFSM.isBeingChased)

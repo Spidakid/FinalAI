@@ -36,7 +36,8 @@ public class GovChaseState : StateMachineBehaviour
             //Set destination to visible target
             if (astar.goalPos.position != visibleTarget.transform.position)
             {
-                astar.ChangeGoalPosition(visibleTarget.transform.position);
+                astar.goalPos.position = visibleTarget.transform.position;
+                //astar.ChangeGoalPosition(visibleTarget.transform.position);
             }
             //Target visible & shoot range reached
             if (astar.reachedGoal)

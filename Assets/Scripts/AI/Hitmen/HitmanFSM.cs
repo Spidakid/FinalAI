@@ -42,6 +42,7 @@ public class HitmanFSM : MonoBehaviour
     /// <summary>
     /// Creates a Smoke Cloud
     /// </summary>
+    /// <param name="_position">Position to spawn smoke bomb</param>
     public void CreateSmokeBubble()
     {
         GameObject smokeobj;

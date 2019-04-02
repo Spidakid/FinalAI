@@ -182,7 +182,7 @@ public class AStarBoid : MonoBehaviour
             reachedGoal = false;
         }
         //Path Follow and Steering algorithm
-        Vector3 objToCurNode = curNodeVector - this.transform.position;
+        Vector3 objToCurNode = new Vector3(curNodeVector.x,this.transform.position.y,curNodeVector.z) - this.transform.position;
         this.transform.rotation = Quaternion.LookRotation(objToCurNode);//Rotate Agent to face node
         this.transform.Translate(Vector3.forward * Speed * Time.deltaTime);//Move Agent
 
