@@ -9,6 +9,6 @@ public class Aspect
         GovForce,
         Islander,
         Hitman,
-        Pacifist
+        Herbworm
     }
 }

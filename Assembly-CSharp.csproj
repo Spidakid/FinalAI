@@ -66,6 +66,12 @@
     <Compile Include="Assets\Scripts\AI\GovForces\Anim States\GovSetGoalState.cs" />
     <Compile Include="Assets\Scripts\AI\GovForces\Anim States\GovShootState.cs" />
     <Compile Include="Assets\Scripts\AI\GovForces\GovForceFSM.cs" />
+    <Compile Include="Assets\Scripts\AI\Herbworm\Anim states\WormGrowState.cs" />
+    <Compile Include="Assets\Scripts\AI\Herbworm\Anim states\WormPreyState.cs" />
+    <Compile Include="Assets\Scripts\AI\Herbworm\Anim states\WormRoam.cs" />
+    <Compile Include="Assets\Scripts\AI\Herbworm\Anim states\WormSetGoalState.cs" />
+    <Compile Include="Assets\Scripts\AI\Herbworm\WormFSM.cs" />
+    <Compile Include="Assets\Scripts\AI\Herbworm\WormTouch.cs" />
     <Compile Include="Assets\Scripts\AI\Hitmen\Anim States\HitmanKillState.cs" />
     <Compile Include="Assets\Scripts\AI\Hitmen\Anim States\HitmanNewContract.cs" />
     <Compile Include="Assets\Scripts\AI\Hitmen\Anim States\HitmanSearchState.cs" />
@@ -94,8 +100,10 @@
     <Compile Include="Assets\Scripts\Pathfinding\Programming\AStar.cs" />
     <Compile Include="Assets\Scripts\Pathfinding\Programming\Node.cs" />
     <Compile Include="Assets\Scripts\Pathfinding\Programming\SortedList.cs" />
+    <Compile Include="Assets\Scripts\PoopTouch.cs" />
     <Compile Include="Assets\Scripts\Projectile.cs" />
     <Compile Include="Assets\Scripts\SightTouchAspect.cs" />
+    <Compile Include="Assets\Scripts\SmellAspect.cs" />
     <Compile Include="Assets\Scripts\SmokeCloud.cs" />
     <Compile Include="Assets\Scripts\Waypoint.cs" />
     <Reference Include="Unity.TextMeshPro.Editor">

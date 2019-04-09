@@ -6,7 +6,7 @@ public class GovForceFSM : MonoBehaviour
 {
     public Aspect.AspectName[] EnemyAspects = {
         Aspect.AspectName.Hitman,
-        Aspect.AspectName.Pacifist
+        Aspect.AspectName.Herbworm
     };
     [Header("Field Of Vision")]
     public float sightDistance;

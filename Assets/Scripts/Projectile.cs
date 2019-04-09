@@ -25,7 +25,7 @@ public class Projectile : MonoBehaviour
             if (aspectRef.aspect == Aspect.AspectName.GovForce ||
            aspectRef.aspect == Aspect.AspectName.Hitman ||
            aspectRef.aspect == Aspect.AspectName.Islander ||
-           aspectRef.aspect == Aspect.AspectName.Pacifist)
+           aspectRef.aspect == Aspect.AspectName.Herbworm)
             {
                 this.gameObject.SetActive(false);
                 other.gameObject.SetActive(false);

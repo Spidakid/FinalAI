@@ -272,13 +272,14 @@ GameObject:
   - component: {fileID: 4951874552398223677}
   - component: {fileID: 7537653446565363838}
   - component: {fileID: 139928160}
+  - component: {fileID: 7137653089866210861}
   m_Layer: 0
   m_Name: Gov_Cube
   m_TagString: GovForce
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &4951874552398223665
 Transform:
   m_ObjectHideFlags: 0
@@ -553,3 +554,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   displayTimer: 5
+--- !u!114 &7137653089866210861
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4951874552398223669}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 948e921643faf6b48b7841fdba8fb045, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  aspect: 0
+  isPoopedOn: 0

@@ -347,6 +347,7 @@ GameObject:
   - component: {fileID: 1375866248353933254}
   - component: {fileID: 1375866248353933248}
   - component: {fileID: 6948546622224439171}
+  - component: {fileID: 7444590060469122335}
   m_Layer: 0
   m_Name: BoidCube
   m_TagString: Boid
@@ -499,6 +500,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   aspect: 1
+--- !u!114 &7444590060469122335
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1375866248353933261}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 948e921643faf6b48b7841fdba8fb045, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  aspect: 1
+  isPoopedOn: 0
 --- !u!1 &1375866249353379686
 GameObject:
   m_ObjectHideFlags: 0
