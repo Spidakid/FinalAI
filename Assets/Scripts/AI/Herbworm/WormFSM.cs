@@ -89,7 +89,9 @@ public class WormFSM : MonoBehaviour
                 break;
         }
         curBody.GetComponent<AStarNavigation>().goalPos = lastBody.transform;//set body to follow last body attached to worm
+        curBody.GetComponent<WormBody>().head = this.gameObject;//set the leader for the new body 
         lastBody = curBody;//assign current body as the last body attached to worm
+        
     }
     private void OnDrawGizmos()
     {

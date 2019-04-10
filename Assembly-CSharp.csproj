@@ -70,6 +70,7 @@
     <Compile Include="Assets\Scripts\AI\Herbworm\Anim states\WormPreyState.cs" />
     <Compile Include="Assets\Scripts\AI\Herbworm\Anim states\WormRoam.cs" />
     <Compile Include="Assets\Scripts\AI\Herbworm\Anim states\WormSetGoalState.cs" />
+    <Compile Include="Assets\Scripts\AI\Herbworm\WormBody.cs" />
     <Compile Include="Assets\Scripts\AI\Herbworm\WormFSM.cs" />
     <Compile Include="Assets\Scripts\AI\Herbworm\WormTouch.cs" />
     <Compile Include="Assets\Scripts\AI\Hitmen\Anim States\HitmanKillState.cs" />

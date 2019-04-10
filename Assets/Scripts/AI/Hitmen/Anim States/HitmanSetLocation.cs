@@ -39,6 +39,11 @@ public class HitmanSetLocation : StateMachineBehaviour
             //transition to Hitman Search State
             animator.SetBool("ReachedWayPoint", false);
         }
+        if (!hitFSM.GetContractObject().activeSelf)
+        {
+            //transition to new contract
+            animator.SetBool("IsTargetDead", true);
+        }
     }
 
     // OnStateExit is called when a transition ends and the state machine finishes evaluating this state

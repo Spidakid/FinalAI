@@ -39,6 +39,11 @@ public class HitmanSearchState : StateMachineBehaviour
         {
             hitFSM.CreateSmokeBubble();
         }
+        if (!hitFSM.GetContractObject().activeSelf)
+        {
+            //transition to new contract
+            animator.SetBool("IsTargetDead", true);
+        }
     }
 
     // OnStateExit is called when a transition ends and the state machine finishes evaluating this state
