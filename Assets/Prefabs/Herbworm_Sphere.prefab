@@ -211,7 +211,7 @@ MonoBehaviour:
   initialstopRadius: 0
   stopColor: {r: 0, g: 1, b: 0, a: 1}
   isStopped: 0
-  showDebug: 1
+  showDebug: 0
   reachedGoal: 0
 --- !u!114 &3976575023238272988
 MonoBehaviour:
@@ -247,7 +247,7 @@ MonoBehaviour:
   poopInterval: 10
   smellDistance: 5
   smellWidthRadius: 2
-  smellInterval: 1.4
+  smellInterval: 1
   chaseSpeed: 2
   initialSpeed: 0
   foodAgent: {fileID: 0}

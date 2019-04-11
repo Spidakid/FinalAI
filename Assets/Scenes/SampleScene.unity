@@ -3479,11 +3479,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Herbworm_Sphere
       objectReference: {fileID: 0}
-    - target: {fileID: 3976575023615288507, guid: 8705ba3a296532b4d91b2870e6ae0a31,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 3976575023615288506, guid: 8705ba3a296532b4d91b2870e6ae0a31,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -3544,16 +3539,6 @@ PrefabInstance:
       propertyPath: goalPos
       value: 
       objectReference: {fileID: 1940407166}
-    - target: {fileID: 3976575023238272991, guid: 8705ba3a296532b4d91b2870e6ae0a31,
-        type: 3}
-      propertyPath: showDebug
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3976575023238272994, guid: 8705ba3a296532b4d91b2870e6ae0a31,
-        type: 3}
-      propertyPath: smellInterval
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8705ba3a296532b4d91b2870e6ae0a31, type: 3}
 --- !u!1001 &4951874551967883252

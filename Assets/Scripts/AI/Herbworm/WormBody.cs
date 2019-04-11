@@ -5,14 +5,14 @@ using UnityEngine;
 public class WormBody : MonoBehaviour
 {
     [HideInInspector]
-    public GameObject head;
+    public GameObject parentBody;
     // Update is called once per frame
     void Update()
     {
-        if (head != null)
+        if (parentBody != null)
         {
             //Check if the head is active
-            if (!head.activeSelf)
+            if (!parentBody.activeSelf)
             {
                 //Deactivate body if head doesn't exist
                 this.gameObject.SetActive(false);
