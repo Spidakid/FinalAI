@@ -245,8 +245,8 @@ MonoBehaviour:
   minPoopTime: 20
   maxPoopTime: 45
   poopInterval: 10
-  smellDistance: 5
-  smellWidthRadius: 2
+  smellDistance: 9
+  smellWidthRadius: 2.1
   smellInterval: 1
   chaseSpeed: 2
   initialSpeed: 0
